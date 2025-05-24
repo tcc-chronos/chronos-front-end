@@ -4,9 +4,9 @@ import { Outlet } from 'react-router-dom'
 
 const MainLayout = () => {
   return (
-    <div>
+    <div className='font-poppins'>
       <Navbar />
-      <div className="h-screen w-screen flex bg-gray-200">
+      <div className="h-screen w-full flex bg-gray-200">
         <Outlet />
       </div>
     </div>

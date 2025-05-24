@@ -1,5 +1,9 @@
-const Documentation = () => {
-    return <h1>Documentation</h1>
-};
+import React from 'react'
 
-export default Documentation;
+function documentation() {
+  return (
+    <div></div>
+  )
+}
+
+export default documentation

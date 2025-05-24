@@ -1,5 +1,17 @@
+import Sidebar from "../components/Sidebar/Sidebar";
+import Chart from "../components/Chart";
+import React, { useState, useEffect } from "react";
+
 const Dashboard = () => {
-    return <h1>Dashboard</h1>
+  useEffect(() => {
+    const dados = sessionStorage.getItem("formData");
+  }, []);
+  return (
+    <div className="flex w-full h-screen">
+      <Sidebar />
+      <Chart />
+    </div>
+  );
 };
 
 export default Dashboard;

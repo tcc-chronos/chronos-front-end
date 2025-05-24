@@ -1,7 +1,7 @@
 const Navbar = () => {
   return (
-    <nav className="bg-white w-screen border-gray-400 shadow-xs border-b">
-      <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl p-4">
+    <nav className="bg-white w-full shadow-xs border-b">
+      <div className="flex flex-wrap justify-between items-center mx-auto max-w-full-xl p-4">
         <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
           {/* <img src="/" className="h-8" alt="Logo" /> */}
           <span className="self-center text-2xl font-semibold whitespace-nowrap">
