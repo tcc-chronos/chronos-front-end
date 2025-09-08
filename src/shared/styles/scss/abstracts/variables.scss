@@ -1,0 +1,40 @@
+:root {
+  /* Brand colors */
+  --brand-primary-darkest: #095993;
+  --brand-primary-dark: #0A6BAF;
+  --brand-primary-medium: #1285D6;
+  --brand-primary-light: #0F8CE4;
+  --brand-primary-lightest: #2A9AEA;
+
+  /* Functional colors - Heavy */
+  --functional-heavy-darkest: #141414;
+  --functional-heavy-dark: #424242;
+  --functional-heavy-medium: #616161;
+  --functional-heavy-light: #9E9E9E;
+  --functional-heavy-lightest: #D5D5D5;
+
+  /* Functional colors - Soft */
+  --functional-soft-darkest: #EEEEEE;
+  --functional-soft-dark: #F7F7F7;
+  --functional-soft-medium: #FCFCFC;
+  --functional-soft-light: #FDFDFD;
+  --functional-soft-lightest: #FFFFFF;
+
+  /* Feedback colors - Success */
+  --feedback-success-dark: #17a145;
+  --feedback-success-medium: #20B981;
+  --feedback-success-light: #29C98F;
+
+  /* Feedback colors - Warning */
+  --feedback-warning-dark: #FF8800;
+  --feedback-warning-light: #FFC33D;
+
+  /* Feedback colors - Danger */
+  --feedback-danger-dark: #C90A08;
+  --feedback-danger-medium: #E8312F;
+  --feedback-danger-light: #F05B40;
+
+  /* Feedback colors - Info */
+  --feedback-info-dark: #2196F3;
+  --feedback-info-light: #26A6FA;
+}

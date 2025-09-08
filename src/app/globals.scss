@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@import '../shared/styles/scss/base/_reset.scss';
+@import '../shared/styles/scss/abstracts/variables.scss';
+
+:root {
+  --font-primary: 'Roboto', sans-serif;
+  --font-secondary: 'Poppins', sans-serif;
+}
+
+html, body {
+  font-family: var(--font-primary);
+}
+
+* {
+  font-family: inherit;
+}
+
+body {
+  * {
+    scroll-behavior: smooth;
+  }
+
+  width: 100%;
+  min-width: 100dvw;
+  
+  height: 100%;
+  min-height: 100dvh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-secondary);
+}
