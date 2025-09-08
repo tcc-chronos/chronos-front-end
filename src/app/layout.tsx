@@ -8,6 +8,7 @@ import '@fontsource/poppins/600.css';
 import '@fontsource/poppins/700.css';
 
 import './globals.scss';
+import Navbar from '../shared/ui/components/navbar';
 
 interface RootLayoutProps {
   children: React.ReactNode;
@@ -16,6 +17,7 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <div className='font-primary bg-functional-soft-dark min-h-screen'>
+      <Navbar />
       <main className="flex-1">
         {children}
       </main>

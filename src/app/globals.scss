@@ -1,7 +1,5 @@
-@import "tailwindcss";
-
-@import '../shared/styles/scss/base/_reset.scss';
-@import '../shared/styles/scss/abstracts/variables.scss';
+@use '../shared/styles/scss/abstracts/variables.scss';
+@use '../shared/styles/scss/abstracts/typography.scss';
 
 :root {
   --font-primary: 'Roboto', sans-serif;
