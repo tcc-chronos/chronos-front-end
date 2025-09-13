@@ -1,48 +1,52 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
   /* Font Families */
-  --font-primary: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-secondary: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-primary:
+    'Roboto', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    sans-serif;
+  --font-secondary:
+    'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    sans-serif;
 
   /* Brand Primary Colors */
-  --color-brand-primary-darkest: #0E5476;
+  --color-brand-primary-darkest: #0e5476;
   --color-brand-primary-dark: #236d91;
-  --color-brand-primary-medium: #2D8BBA;
-  --color-brand-primary-light: #41B8D5;
-  --color-brand-primary-lightest: #6CE5E8;
+  --color-brand-primary-medium: #2d8bba;
+  --color-brand-primary-light: #41b8d5;
+  --color-brand-primary-lightest: #6ce5e8;
 
   /* Functional Heavy Colors */
   --color-functional-heavy-darkest: #141414;
   --color-functional-heavy-dark: #424242;
   --color-functional-heavy-medium: #616161;
-  --color-functional-heavy-light: #9E9E9E;
-  --color-functional-heavy-lightest: #D5D5D5;
+  --color-functional-heavy-light: #9e9e9e;
+  --color-functional-heavy-lightest: #d5d5d5;
 
   /* Functional Soft Colors */
-  --color-functional-soft-darkest: #EEEEEE;
-  --color-functional-soft-dark: #F7F7F7;
-  --color-functional-soft-medium: #FCFCFC;
-  --color-functional-soft-light: #FDFDFD;
-  --color-functional-soft-lightest: #FFFFFF;
+  --color-functional-soft-darkest: #eeeeee;
+  --color-functional-soft-dark: #f7f7f7;
+  --color-functional-soft-medium: #fcfcfc;
+  --color-functional-soft-light: #fdfdfd;
+  --color-functional-soft-lightest: #ffffff;
 
   /* Feedback Success Colors */
   --color-feedback-success-dark: #17a145;
-  --color-feedback-success-medium: #20B981;
-  --color-feedback-success-light: #29C98F;
+  --color-feedback-success-medium: #20b981;
+  --color-feedback-success-light: #29c98f;
 
   /* Feedback Warning Colors */
-  --color-feedback-warning-dark: #FF8800;
-  --color-feedback-warning-light: #FFC33D;
+  --color-feedback-warning-dark: #ff8800;
+  --color-feedback-warning-light: #ffc33d;
 
   /* Feedback Danger Colors */
-  --color-feedback-danger-dark: #C90A08;
-  --color-feedback-danger-medium: #E8312F;
-  --color-feedback-danger-light: #F05B40;
+  --color-feedback-danger-dark: #c90a08;
+  --color-feedback-danger-medium: #e8312f;
+  --color-feedback-danger-light: #f05b40;
 
   /* Feedback Info Colors */
-  --color-feedback-info-dark: #2196F3;
-  --color-feedback-info-light: #26A6FA;
+  --color-feedback-info-dark: #2196f3;
+  --color-feedback-info-light: #26a6fa;
 }
 
 :root {
@@ -71,6 +75,11 @@ body {
   min-height: 100vh;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-secondary);
 }
