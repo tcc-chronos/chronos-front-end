@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+@theme {
+  /* Font Families */
+  --font-primary: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-secondary: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* Brand Primary Colors */
+  --color-brand-primary-darkest: #0E5476;
+  --color-brand-primary-dark: #236d91;
+  --color-brand-primary-medium: #2D8BBA;
+  --color-brand-primary-light: #41B8D5;
+  --color-brand-primary-lightest: #6CE5E8;
+
+  /* Functional Heavy Colors */
+  --color-functional-heavy-darkest: #141414;
+  --color-functional-heavy-dark: #424242;
+  --color-functional-heavy-medium: #616161;
+  --color-functional-heavy-light: #9E9E9E;
+  --color-functional-heavy-lightest: #D5D5D5;
+
+  /* Functional Soft Colors */
+  --color-functional-soft-darkest: #EEEEEE;
+  --color-functional-soft-dark: #F7F7F7;
+  --color-functional-soft-medium: #FCFCFC;
+  --color-functional-soft-light: #FDFDFD;
+  --color-functional-soft-lightest: #FFFFFF;
+
+  /* Feedback Success Colors */
+  --color-feedback-success-dark: #17a145;
+  --color-feedback-success-medium: #20B981;
+  --color-feedback-success-light: #29C98F;
+
+  /* Feedback Warning Colors */
+  --color-feedback-warning-dark: #FF8800;
+  --color-feedback-warning-light: #FFC33D;
+
+  /* Feedback Danger Colors */
+  --color-feedback-danger-dark: #C90A08;
+  --color-feedback-danger-medium: #E8312F;
+  --color-feedback-danger-light: #F05B40;
+
+  /* Feedback Info Colors */
+  --color-feedback-info-dark: #2196F3;
+  --color-feedback-info-light: #26A6FA;
+}
+
+:root {
+  /* Base Styles */
+  font-family: var(--font-primary);
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #ffffff;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-secondary);
+}
