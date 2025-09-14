@@ -1,18 +1,19 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { DefaultLayout, Training, NotFound } from './components';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { DefaultLayout, Training, NotFound, DashboardPage } from './components';
 import './styles/globals.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <Router>
+    <BrowserRouter>
       <Routes>
-        <Route path='/' element={<DefaultLayout />}>
-          <Route index element={<Training />} />
+        <Route element={<DefaultLayout />}>
+          <Route path='/' element={<Training />} />
+          <Route path='/dashboard' element={<DashboardPage />} />
           <Route path='*' element={<NotFound />} />
         </Route>
       </Routes>
-    </Router>
+    </BrowserRouter>
   </StrictMode>
 );
