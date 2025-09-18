@@ -4,5 +4,7 @@ export { SidebarContent } from './SidebarContent';
 export { AnalyticsSidebarContent } from './AnalyticsSidebarContent';
 export { BasicTrainingSidebarContent } from './BasicTrainingSidebarContent';
 export { DataTrainingSidebarContent } from './DataTrainingSidebarContent';
+export { RNNTrainingSidebarContent } from './RNNTrainingSidebarContent';
+export { SortableList } from './SortableList';
 export { NumberInputField } from './NumberInputField';
 export { SelectField } from './SelectField';

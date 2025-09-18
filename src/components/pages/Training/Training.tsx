@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
-import { Settings, ChartLine } from 'lucide-react';
+import { Settings, ChartLine, GitFork } from 'lucide-react';
 import {
   BasicTrainingSidebarContent,
   DataTrainingSidebarContent,
+  RNNTrainingSidebarContent,
 } from '../../molecules';
 import { useSidebar } from '../../../hooks/useSidebarHook';
 
@@ -26,6 +27,14 @@ const Training = () => {
       label: 'Configuração de Dados',
       tooltip: 'Configure os parâmetros dos dados de treinamento',
       content: <DataTrainingSidebarContent />,
+    });
+
+    addItem({
+      id: 'rnn',
+      icon: <GitFork className='rotate-90' />,
+      label: 'Configuração de RNN',
+      tooltip: 'Configure a arquitetura da rede neural',
+      content: <RNNTrainingSidebarContent />,
     });
 
     return () => {
