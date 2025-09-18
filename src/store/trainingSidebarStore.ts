@@ -15,6 +15,7 @@ export interface TrainingSidebarState {
   dropout_rate: number;
   early_stopping_patience: number;
   multi_feature: boolean;
+  volume: number;
 
   // RNNConfig
   rnn_units: number[];
@@ -45,6 +46,7 @@ const defaultValues: Omit<TrainingSidebarState, 'setField' | 'setFields'> = {
   dropout_rate: 0.2,
   early_stopping_patience: 5,
   multi_feature: false,
+  volume: 1000,
   rnn_units: [128],
   dense_units: [64],
   dense_activation: 'relu',

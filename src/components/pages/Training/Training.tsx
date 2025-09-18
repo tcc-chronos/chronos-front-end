@@ -1,6 +1,9 @@
 import { useEffect } from 'react';
-import { Settings } from 'lucide-react';
-import { BasicTrainingSidebarContent } from '../../molecules';
+import { Settings, ChartLine } from 'lucide-react';
+import {
+  BasicTrainingSidebarContent,
+  DataTrainingSidebarContent,
+} from '../../molecules';
 import { useSidebar } from '../../../hooks/useSidebarHook';
 
 const Training = () => {
@@ -15,6 +18,14 @@ const Training = () => {
       label: 'Configuração de Treinamento',
       tooltip: 'Configure os parâmetros do seu treinamento',
       content: <BasicTrainingSidebarContent />,
+    });
+
+    addItem({
+      id: 'data',
+      icon: <ChartLine />,
+      label: 'Configuração de Dados',
+      tooltip: 'Configure os parâmetros dos dados de treinamento',
+      content: <DataTrainingSidebarContent />,
     });
 
     return () => {

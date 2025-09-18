@@ -3,5 +3,6 @@ export { SidebarItem } from './SidebarItem';
 export { SidebarContent } from './SidebarContent';
 export { AnalyticsSidebarContent } from './AnalyticsSidebarContent';
 export { BasicTrainingSidebarContent } from './BasicTrainingSidebarContent';
+export { DataTrainingSidebarContent } from './DataTrainingSidebarContent';
 export { NumberInputField } from './NumberInputField';
 export { SelectField } from './SelectField';
