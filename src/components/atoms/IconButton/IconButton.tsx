@@ -13,12 +13,12 @@ const IconButton: React.FC<IconButtonProps> = ({
   ...props
 }) => {
   const baseClasses =
-    'inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none  disabled:opacity-50 disabled:cursor-not-allowed';
+    'inline-flex items-center justify-center cursor-pointer rounded-lg transition-all duration-200 focus:outline-none  disabled:opacity-50';
 
   const variants = {
     active:
       'bg-brand-primary-dark text-white shadow-sm hover:bg-brand-primary-darkest',
-    inactive: 'text-gray-600 hover:bg-gray-100 hover:text-gray-900',
+    inactive: 'text-gray-600 hover:bg-gray-200 hover:text-gray-900',
   };
 
   const sizes = {

@@ -161,7 +161,7 @@ describe('SidebarItem', () => {
     render(<SidebarItem {...defaultProps} />);
 
     const iconButton = screen.getByTestId('icon-button');
-    expect(iconButton).toHaveClass('size-md');
+    expect(iconButton).toHaveClass('size-lg');
   });
 
   it('handles complex icons correctly', () => {

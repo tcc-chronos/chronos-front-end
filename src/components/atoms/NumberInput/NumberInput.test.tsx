@@ -53,11 +53,11 @@ describe('NumberInput', () => {
   it('applies correct size classes', () => {
     const { rerender } = render(<NumberInput size='sm' />);
     let input = screen.getByRole('textbox');
-    expect(input).toHaveClass('px-3', 'py-1.5', 'text-sm');
+    expect(input).toHaveClass('px-3', 'py-1.5');
 
     rerender(<NumberInput size='lg' />);
     input = screen.getByRole('textbox');
-    expect(input).toHaveClass('px-4', 'py-3', 'text-lg');
+    expect(input).toHaveClass('px-4', 'py-3');
   });
 
   it('handles empty value correctly', () => {

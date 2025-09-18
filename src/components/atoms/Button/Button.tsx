@@ -19,11 +19,11 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    // Base classes for all buttons
     const baseClasses = [
       'inline-flex',
       'items-center',
       'justify-center',
+      'cursor-pointer',
       'font-medium',
       'transition-all',
       'duration-200',
@@ -35,7 +35,6 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       'border',
     ];
 
-    // Size classes
     const sizeClasses = {
       xs: ['px-2', 'py-1', 'text-xs', 'rounded'],
       sm: ['px-3', 'py-1.5', 'text-sm', 'rounded-md'],
@@ -44,7 +43,6 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       xl: ['px-8', 'py-4', 'text-lg', 'rounded-lg'],
     };
 
-    // Variant classes using brand colors
     const variantClasses = {
       primary: [
         'bg-brand-primary-medium',
@@ -105,7 +103,6 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       ],
     };
 
-    // Loading spinner component
     const LoadingSpinner = () => (
       <svg
         className='animate-spin mr-2 h-4 w-4'
@@ -129,7 +126,6 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       </svg>
     );
 
-    // Combine all classes
     const buttonClasses = [
       ...baseClasses,
       ...sizeClasses[size],

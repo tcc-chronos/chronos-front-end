@@ -108,14 +108,14 @@ const NumberInput: React.FC<NumberInputProps> = ({
   }, [internalValue, parseInput, validateNumber, formatNumber, onChange]);
 
   const getBaseClasses = () => {
-    return 'w-full border rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary-medium focus:border-brand-primary-medium disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed';
+    return 'w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary-medium focus:border-brand-primary-medium disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed';
   };
 
   const getSizeClasses = () => {
     const sizes = {
-      sm: 'px-3 py-1.5 text-sm',
-      md: 'px-4 py-2 text-base',
-      lg: 'px-4 py-3 text-lg',
+      sm: 'px-3 py-1.5',
+      md: 'px-4 py-2',
+      lg: 'px-4 py-3',
     };
     return sizes[size];
   };

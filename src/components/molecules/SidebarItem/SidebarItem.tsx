@@ -30,11 +30,10 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
           disabled={disabled}
           ariaLabel={label}
           tooltip={tooltip}
-          size='md'
+          size='lg'
         />
       </div>
 
-      {/* Conteúdo expandido - será controlado pela Sidebar pai */}
       {isActive && content && <div className='hidden'>{content}</div>}
     </div>
   );

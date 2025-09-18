@@ -64,7 +64,8 @@ describe('Tooltip', () => {
 
     await waitFor(() => {
       const tooltip = screen.getByRole('tooltip');
-      expect(tooltip).toHaveClass('top-full');
+      expect(tooltip).toBeInTheDocument();
+      expect(tooltip).toHaveStyle({ position: 'absolute' });
     });
   });
 

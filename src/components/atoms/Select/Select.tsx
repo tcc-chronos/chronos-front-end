@@ -44,13 +44,15 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
       lg: 'px-5 py-3 text-lg',
     };
 
-    // Base classes for the select element
+    // Base classes para o select customizado
     const baseClasses = [
       'w-full',
+      'bg-gray-50',
       'border',
-      'rounded-md',
-      'bg-functional-soft-lightest',
-      'text-functional-heavy-darkest',
+      'border-gray-300',
+      'text-gray-900',
+      'text-sm',
+      'rounded-lg',
       'transition-all',
       'duration-200',
       'focus:outline-none',

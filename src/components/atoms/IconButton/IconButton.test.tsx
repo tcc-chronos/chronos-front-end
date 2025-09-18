@@ -50,10 +50,7 @@ describe('IconButton', () => {
     render(<IconButton icon={mockIcon} disabled ariaLabel='Disabled icon' />);
     const button = screen.getByRole('button');
     expect(button).toBeDisabled();
-    expect(button).toHaveClass(
-      'disabled:opacity-50',
-      'disabled:cursor-not-allowed'
-    );
+    expect(button).toHaveClass('disabled:opacity-50');
   });
 
   it('shows tooltip when provided', () => {

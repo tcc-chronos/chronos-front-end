@@ -1,10 +1,10 @@
 import React from 'react';
-import NumberInput from '../../atoms/NumberInput/NumberInput';
+import Select from '../../atoms/Select/Select';
 import Icon from '../../atoms/Icon/Icon';
 import Tooltip from '../../atoms/Tooltip/Tooltip';
-import type { NumberInputFieldProps } from './NumberInputField.types';
+import type { SelectFieldProps } from './SelectField.types';
 
-const NumberInputField: React.FC<NumberInputFieldProps> = ({
+const SelectField: React.FC<SelectFieldProps> = ({
   label,
   id,
   error,
@@ -13,7 +13,7 @@ const NumberInputField: React.FC<NumberInputFieldProps> = ({
   required = false,
   labelClassName = '',
   className = '',
-  ...inputProps
+  ...selectProps
 }) => {
   const hasError = !!error;
 
@@ -47,8 +47,8 @@ const NumberInputField: React.FC<NumberInputFieldProps> = ({
         )}
       </div>
 
-      {/* Input */}
-      <NumberInput
+      {/* Select */}
+      <Select
         id={id}
         hasError={hasError}
         className={className}
@@ -56,7 +56,7 @@ const NumberInputField: React.FC<NumberInputFieldProps> = ({
           error ? `${id}-error` : hint ? `${id}-hint` : undefined
         }
         aria-invalid={hasError}
-        {...inputProps}
+        {...selectProps}
       />
 
       {/* Mensagem de ajuda ou erro */}
@@ -80,4 +80,4 @@ const NumberInputField: React.FC<NumberInputFieldProps> = ({
   );
 };
 
-export default NumberInputField;
+export default SelectField;
