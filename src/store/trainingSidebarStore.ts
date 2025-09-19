@@ -1,31 +1,31 @@
 import { create } from 'zustand';
 
+export interface LayerConfig {
+  neurons: number;
+  dropout: number;
+}
+
 export interface TrainingSidebarState {
   // Main
   rnn_type: 'gru' | 'lstm';
-  device?: string;
-  attribute?: string;
+  entity_type?: string;
+  entity_id?: string;
+  feature?: string;
   column_data: string;
   epochs: number;
-  n_steps_ahead: number;
-
+  forecast_horizon: number;
   // DataConfig
-  window_size: number;
+  lookback_window: number;
   learning_rate: number;
-  dropout_rate: number;
-  early_stopping_patience: number;
+  early_stopping_patience?: number;
   multi_feature: boolean;
-  volume: number;
-
   // RNNConfig
-  rnn_units: number[];
-  dense_units: number[];
-
+  rnn_units: LayerConfig[];
+  dense_units: LayerConfig[];
   // Extras
   dense_activation: string;
   bidirecional: boolean;
   batch_size: number;
-
   // Métodos
   setField: <K extends keyof TrainingSidebarState>(
     key: K,
@@ -36,19 +36,18 @@ export interface TrainingSidebarState {
 
 const defaultValues: Omit<TrainingSidebarState, 'setField' | 'setFields'> = {
   rnn_type: 'gru',
-  device: undefined,
-  attribute: undefined,
+  entity_type: undefined,
+  entity_id: undefined,
+  feature: undefined,
   column_data: '',
   epochs: 1,
-  n_steps_ahead: 1,
-  window_size: 60,
+  forecast_horizon: 1,
+  lookback_window: 60,
   learning_rate: 0.001,
-  dropout_rate: 0.2,
   early_stopping_patience: 5,
   multi_feature: false,
-  volume: 1000,
-  rnn_units: [128],
-  dense_units: [64],
+  rnn_units: [{ neurons: 128, dropout: 0.2 }],
+  dense_units: [{ neurons: 64, dropout: 0.2 }],
   dense_activation: 'relu',
   bidirecional: false,
   batch_size: 16,

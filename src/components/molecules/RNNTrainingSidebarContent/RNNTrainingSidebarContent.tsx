@@ -10,6 +10,7 @@ import type {
 
 interface ValidationErrors {
   neurons?: string;
+  dropout?: string;
   type?: string;
 }
 
@@ -20,6 +21,7 @@ const RNNTrainingSidebarContent: React.FC<RNNTrainingSidebarContentProps> = ({
   const { rnn_units, dense_units, setField } = useTrainingSidebarStore();
 
   const [neurons, setNeurons] = useState<number | undefined>(undefined);
+  const [dropout, setDropout] = useState<number | undefined>(0.2);
   const [layerType, setLayerType] = useState<'RNN' | 'Dense' | ''>('');
   const [errors, setErrors] = useState<ValidationErrors>({});
 
@@ -30,17 +32,19 @@ const RNNTrainingSidebarContent: React.FC<RNNTrainingSidebarContentProps> = ({
 
   // Converter arrays do store para objetos Layer
   const layersRNN = useMemo<Layer[]>(() => {
-    return rnn_units.map((neurons, index) => ({
+    return rnn_units.map((layer, index) => ({
       id: `rnn-${index}`,
-      neurons,
+      neurons: layer.neurons,
+      dropout: layer.dropout,
       type: 'RNN' as const,
     }));
   }, [rnn_units]);
 
   const layersDense = useMemo<Layer[]>(() => {
-    return dense_units.map((neurons, index) => ({
+    return dense_units.map((layer, index) => ({
       id: `dense-${index}`,
-      neurons,
+      neurons: layer.neurons,
+      dropout: layer.dropout,
       type: 'Dense' as const,
     }));
   }, [dense_units]);
@@ -50,14 +54,21 @@ const RNNTrainingSidebarContent: React.FC<RNNTrainingSidebarContentProps> = ({
       ? 'Número de neurônios deve ser no mínimo 1'
       : undefined;
 
+  const validateDropout = (value: number | undefined) =>
+    value === undefined || value < 0.00001 || value > 1
+      ? 'Dropout deve estar entre 0.00001 e 1'
+      : undefined;
+
   const validateLayerType = (value: string) =>
     !value ? 'Tipo da camada é obrigatório' : undefined;
 
   const isFormValid = () => {
     return (
       !validateNeurons(neurons) &&
+      !validateDropout(dropout) &&
       !validateLayerType(layerType) &&
       neurons &&
+      dropout !== undefined &&
       layerType
     );
   };
@@ -67,6 +78,11 @@ const RNNTrainingSidebarContent: React.FC<RNNTrainingSidebarContentProps> = ({
     setErrors(prev => ({ ...prev, neurons: validateNeurons(value) }));
   };
 
+  const handleDropoutChange = (value: number | undefined) => {
+    setDropout(value);
+    setErrors(prev => ({ ...prev, dropout: validateDropout(value) }));
+  };
+
   const handleLayerTypeChange = (value: string | number) => {
     const typeValue = String(value) as 'RNN' | 'Dense' | '';
     setLayerType(typeValue);
@@ -74,31 +90,38 @@ const RNNTrainingSidebarContent: React.FC<RNNTrainingSidebarContentProps> = ({
   };
 
   const handleAddLayer = () => {
-    if (!isFormValid() || !neurons || !layerType) {
+    if (!isFormValid() || !neurons || dropout === undefined || !layerType) {
       setErrors({
         neurons: validateNeurons(neurons),
+        dropout: validateDropout(dropout),
         type: validateLayerType(layerType),
       });
       return;
     }
 
+    const newLayer = { neurons, dropout };
+
     if (layerType === 'RNN') {
-      const newRnnUnits = [...rnn_units, neurons];
+      const newRnnUnits = [...rnn_units, newLayer];
       setField('rnn_units', newRnnUnits);
     } else if (layerType === 'Dense') {
-      const newDenseUnits = [...dense_units, neurons];
+      const newDenseUnits = [...dense_units, newLayer];
       setField('dense_units', newDenseUnits);
     }
 
     // Reset form
     setNeurons(undefined);
+    setDropout(0.2);
     setLayerType('');
     setErrors({});
   };
 
   const handleOrderChangeRNN = useCallback(
     (newLayers: Layer[]) => {
-      const newUnits = newLayers.map(layer => layer.neurons);
+      const newUnits = newLayers.map(layer => ({
+        neurons: layer.neurons,
+        dropout: layer.dropout,
+      }));
       setField('rnn_units', newUnits);
     },
     [setField]
@@ -106,7 +129,10 @@ const RNNTrainingSidebarContent: React.FC<RNNTrainingSidebarContentProps> = ({
 
   const handleOrderChangeDense = useCallback(
     (newLayers: Layer[]) => {
-      const newUnits = newLayers.map(layer => layer.neurons);
+      const newUnits = newLayers.map(layer => ({
+        neurons: layer.neurons,
+        dropout: layer.dropout,
+      }));
       setField('dense_units', newUnits);
     },
     [setField]
@@ -144,10 +170,23 @@ const RNNTrainingSidebarContent: React.FC<RNNTrainingSidebarContentProps> = ({
           decimalPlaces={0}
           placeholder='128'
           error={errors.neurons}
-          infoTooltip='Lorem Ipsum dolor sit amet, consectetur adipiscing elit.'
+          infoTooltip='Número de neurônios da camada.'
           required
         />
-
+        <NumberInputField
+          id='dropout'
+          label='Dropout:'
+          value={dropout}
+          onChange={handleDropoutChange}
+          min={0.00001}
+          max={1}
+          step={0.00001}
+          decimalPlaces={5}
+          placeholder='0.2'
+          error={errors.dropout}
+          infoTooltip='Taxa de dropout para regularização.'
+          required
+        />
         <SelectField
           id='layer_type'
           label='Tipo da camada:'
@@ -156,10 +195,9 @@ const RNNTrainingSidebarContent: React.FC<RNNTrainingSidebarContentProps> = ({
           options={layerTypeOptions}
           placeholder='Selecione o tipo'
           error={errors.type}
-          infoTooltip='Lorem Ipsum dolor sit amet, consectetur adipiscing elit.'
+          infoTooltip='Tipo da camada (RNN ou Dense).'
           required
         />
-
         <Button
           onClick={handleAddLayer}
           variant='primary'
@@ -168,7 +206,6 @@ const RNNTrainingSidebarContent: React.FC<RNNTrainingSidebarContentProps> = ({
         >
           Adicionar Camada
         </Button>
-
         {/* Lista de camadas */}
         <SortableList
           layersRNN={layersRNN}
@@ -177,6 +214,11 @@ const RNNTrainingSidebarContent: React.FC<RNNTrainingSidebarContentProps> = ({
           onOrderChangeDense={handleOrderChangeDense}
           onRemoveLayer={handleRemoveLayer}
         />
+      </div>
+      <div className='fixed bottom-0 bg-white pb-2 border-gray-200 w-70'>
+        <Button variant='primary' fullWidth>
+          Adicionar Modelo
+        </Button>
       </div>
     </SidebarContent>
   );

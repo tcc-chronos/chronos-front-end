@@ -93,7 +93,7 @@ const SortableList: React.FC<SortableListProps> = ({
                     Camada {layer.type}
                   </span>
                   <span className='text-xs text-gray-500'>
-                    {layer.neurons} neurônios
+                    {layer.neurons} neurônios | Dropout: {layer.dropout}
                   </span>
                 </div>
               </div>
@@ -138,7 +138,7 @@ const SortableList: React.FC<SortableListProps> = ({
                       Camada {layer.type}
                     </span>
                     <span className='text-xs text-gray-500'>
-                      {layer.neurons} neurônios
+                      {layer.neurons} neurônios | Dropout: {layer.dropout}
                     </span>
                   </div>
                 </div>

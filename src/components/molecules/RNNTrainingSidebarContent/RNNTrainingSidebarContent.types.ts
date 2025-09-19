@@ -1,6 +1,7 @@
 export interface Layer {
   id: string;
   neurons: number;
+  dropout: number;
   type: 'RNN' | 'Dense';
 }
 

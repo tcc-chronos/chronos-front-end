@@ -1,138 +1,109 @@
 import React, { useEffect, useState } from 'react';
-import { Button } from '../../atoms';
-import { NumberInputField, SidebarContent, SelectField } from '../';
+import { SidebarContent, SelectField } from '../';
 import { useTrainingSidebarStore } from '../../../store/trainingSidebarStore';
 import type { BasicTrainingSidebarContentProps } from './BasicTrainingSidebarContent.types';
+import { Button } from '../..';
 
 interface ValidationErrors {
   rnn_type?: string;
-  device?: string;
-  attribute?: string;
+  entity_type?: string;
+  entity_id?: string;
+  feature?: string;
   epochs?: string;
-  n_steps_ahead?: string;
+  forecast_horizon?: string;
 }
 
 const BasicTrainingSidebarContent: React.FC<
   BasicTrainingSidebarContentProps
 > = ({ className = '', ...props }) => {
-  const {
-    rnn_type,
-    device,
-    attribute,
-    epochs,
-    n_steps_ahead,
-    setField,
-    ...storeData
-  } = useTrainingSidebarStore();
+  const { rnn_type, entity_type, entity_id, feature, setField } =
+    useTrainingSidebarStore();
   const [errors, setErrors] = useState<ValidationErrors>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const rnnTypeOptions = [
     { value: 'lstm', label: 'LSTM' },
     { value: 'gru', label: 'GRU' },
   ];
 
-  const [deviceOptions, setDeviceOptions] = useState<
+  const [entityTypeOptions] = useState<{ value: string; label: string }[]>([
+    { value: 'sensor', label: 'Sensor' },
+    { value: 'equipamento', label: 'Equipamento' },
+    { value: 'ambiente', label: 'Ambiente' },
+  ]);
+  const [entityIdOptions, setEntityIdOptions] = useState<
     { value: string; label: string }[]
   >([]);
-  const [attributeOptions, setAttributeOptions] = useState<
+  const [featureOptions, setFeatureOptions] = useState<
     { value: string; label: string }[]
   >([]);
 
   useEffect(() => {
-    setTimeout(() => {
-      setDeviceOptions([
-        { value: 'cpu', label: 'CPU' },
-        { value: 'gpu', label: 'GPU' },
-        { value: 'tpu', label: 'TPU' },
-      ]);
-    }, 500);
-  }, []);
+    // Mock: Carregar opções de entity_id baseado no tipo
+    if (entity_type) {
+      setTimeout(() => {
+        setEntityIdOptions([
+          { value: 'cpu', label: 'CPU' },
+          { value: 'gpu', label: 'GPU' },
+          { value: 'tpu', label: 'TPU' },
+        ]);
+      }, 500);
+    } else {
+      setEntityIdOptions([]);
+    }
+  }, [entity_type]);
 
   useEffect(() => {
-    if (device) {
-      setAttributeOptions([
+    // Mock: Carregar opções de feature baseado no entity_id
+    if (entity_id) {
+      setFeatureOptions([
         { value: 'temperature', label: 'Temperatura' },
         { value: 'voltage', label: 'Tensão' },
         { value: 'current', label: 'Corrente' },
       ]);
     } else {
-      setAttributeOptions([]);
+      setFeatureOptions([]);
     }
-  }, [device]);
+  }, [entity_id]);
 
   const validateRnnType = (value: string | undefined) =>
     !value ? 'Tipo de RNN obrigatório' : undefined;
-  const validateDevice = (value: string | undefined) =>
+  const validateEntityType = (value: string | undefined) =>
+    !value ? 'Tipo de dispositivo obrigatório' : undefined;
+  const validateEntityId = (value: string | undefined) =>
     !value ? 'Dispositivo obrigatório' : undefined;
-  const validateAttribute = (value: string | undefined) =>
+  const validateFeature = (value: string | undefined) =>
     !value ? 'Atributo obrigatório' : undefined;
-  const validateEpochs = (value: number | undefined) =>
-    !value || value < 1 ? 'Épocas deve ser no mínimo 1' : undefined;
-  const validateNStepsAhead = (value: number | undefined) =>
-    !value || value < 1 ? 'Janela de Previsão deve ser no mínimo 1' : undefined;
-
-  const isFormValid = () => {
-    return (
-      !validateRnnType(rnn_type) &&
-      !validateDevice(device) &&
-      !validateAttribute(attribute) &&
-      !validateEpochs(epochs) &&
-      !validateNStepsAhead(n_steps_ahead)
-    );
-  };
 
   const handleRnnTypeChange = (value: string | number) => {
     setField('rnn_type', value as 'gru' | 'lstm');
     setErrors(prev => ({ ...prev, rnn_type: validateRnnType(String(value)) }));
   };
-  const handleDeviceChange = (value: string | number) => {
-    setField('device', String(value));
-    setField('attribute', undefined);
+  const handleEntityTypeChange = (value: string | number) => {
+    setField('entity_type', String(value));
+    setField('entity_id', undefined);
+    setField('feature', undefined);
     setErrors(prev => ({
       ...prev,
-      device: validateDevice(String(value)),
-      attribute: undefined,
+      entity_type: validateEntityType(String(value)),
+      entity_id: undefined,
+      feature: undefined,
     }));
   };
-  const handleAttributeChange = (value: string | number) => {
-    setField('attribute', String(value));
+  const handleEntityIdChange = (value: string | number) => {
+    setField('entity_id', String(value));
+    setField('feature', undefined);
     setErrors(prev => ({
       ...prev,
-      attribute: validateAttribute(String(value)),
+      entity_id: validateEntityId(String(value)),
+      feature: undefined,
     }));
   };
-  const handleEpochsChange = (value: number | undefined) => {
-    setField('epochs', value ?? 1);
-    setErrors(prev => ({ ...prev, epochs: validateEpochs(value) }));
-  };
-  const handleNStepsAheadChange = (value: number | undefined) => {
-    setField('n_steps_ahead', value ?? 1);
-    setErrors(prev => ({ ...prev, n_steps_ahead: validateNStepsAhead(value) }));
-  };
-
-  const handleSubmit = async () => {
-    if (!isFormValid()) {
-      alert('Preencha todos os campos obrigatórios corretamente.');
-      return;
-    }
-    setIsSubmitting(true);
-    try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('Dados enviados:', {
-        ...storeData,
-        rnn_type,
-        device,
-        attribute,
-        epochs,
-        n_steps_ahead,
-      });
-      alert('Treinamento iniciado!');
-    } catch {
-      alert('Erro ao treinar modelo');
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleFeatureChange = (value: string | number) => {
+    setField('feature', String(value));
+    setErrors(prev => ({
+      ...prev,
+      feature: validateFeature(String(value)),
+    }));
   };
 
   return (
@@ -151,73 +122,53 @@ const BasicTrainingSidebarContent: React.FC<
           options={rnnTypeOptions}
           placeholder='Selecione o tipo de RNN'
           error={errors.rnn_type}
-          infoTooltip='Lorem Ipsum dolor sit amet, consectetur adipiscing elit.'
+          infoTooltip='Tipo de rede neural recorrente.'
           required
         />
 
         <SelectField
-          id='device'
+          id='entity_type'
+          label='Tipo de dispositivo:'
+          value={entity_type}
+          onChange={handleEntityTypeChange}
+          options={entityTypeOptions}
+          placeholder='Selecione o tipo de dispositivo'
+          error={errors.entity_type}
+          infoTooltip='Tipo de entidade/dispositivo.'
+          required
+        />
+
+        <SelectField
+          id='entity_id'
           label='Dispositivo:'
-          value={device}
-          onChange={handleDeviceChange}
-          options={deviceOptions}
+          value={entity_id}
+          onChange={handleEntityIdChange}
+          options={entityIdOptions}
           placeholder='Selecione o dispositivo'
-          error={errors.device}
-          infoTooltip='Lorem Ipsum dolor sit amet, consectetur.'
+          error={errors.entity_id}
+          infoTooltip='Identificador do dispositivo.'
           required
-          loading={deviceOptions.length === 0}
+          loading={entityTypeOptions.length === 0}
+          disabled={!entity_type}
         />
 
         <SelectField
-          id='attribute'
+          id='feature'
           label='Atributo:'
-          value={attribute}
-          onChange={handleAttributeChange}
-          options={attributeOptions}
+          value={feature}
+          onChange={handleFeatureChange}
+          options={featureOptions}
           placeholder='Selecione o atributo'
-          error={errors.attribute}
-          infoTooltip='Lorem Ipsum dolor sit amet.'
+          error={errors.feature}
+          infoTooltip='Atributo/feature do dispositivo.'
           required
-          loading={Boolean(device && attributeOptions.length === 0)}
-          disabled={!device}
+          loading={Boolean(entity_id && featureOptions.length === 0)}
+          disabled={!entity_id}
         />
 
-        <NumberInputField
-          id='epochs'
-          label='Épocas:'
-          value={epochs}
-          onChange={handleEpochsChange}
-          min={1}
-          decimalPlaces={0}
-          placeholder='1'
-          error={errors.epochs}
-          infoTooltip='Lorem Ipsum dolor sit amet, integer.'
-          required
-        />
-
-        <NumberInputField
-          id='n_steps_ahead'
-          label='Janela de Previsão:'
-          value={n_steps_ahead}
-          onChange={handleNStepsAheadChange}
-          min={1}
-          decimalPlaces={0}
-          placeholder='1'
-          error={errors.n_steps_ahead}
-          infoTooltip='Lorem Ipsum dolor sit amet, integer.'
-          required
-        />
-
-        <div className='pt-4'>
-          <Button
-            onClick={handleSubmit}
-            variant='primary'
-            fullWidth
-            isLoading={isSubmitting}
-            loadingText='Treinando...'
-            disabled={isSubmitting || !isFormValid()}
-          >
-            Treinar Modelo
+        <div className='fixed bottom-0 bg-white pb-2 border-gray-200 w-70'>
+          <Button variant='primary' fullWidth>
+            Adicionar Modelo
           </Button>
         </div>
       </div>

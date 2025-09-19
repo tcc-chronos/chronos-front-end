@@ -5,6 +5,7 @@ import {
   DataTrainingSidebarContent,
   RNNTrainingSidebarContent,
 } from '../../molecules';
+import { ModelsList } from '../../organisms';
 import { useSidebar } from '../../../hooks/useSidebarHook';
 
 const Training = () => {
@@ -44,12 +45,21 @@ const Training = () => {
 
   return (
     <div className='space-y-6'>
+      {/* Header */}
       <div>
-        <h1 className='text-3xl font-bold text-gray-900'>Dashboard</h1>
+        <h1 className='text-3xl font-bold text-gray-900'>Treinamento</h1>
         <p className='text-gray-600 mt-2'>
-          Bem-vindo ao painel principal. Use a sidebar para visualizar as
-          métricas.
+          Gerencie seus modelos de rede neural e configure novos treinamentos.
+          Use a sidebar para configurar os parâmetros dos seus modelos.
         </p>
+      </div>
+
+      {/* Models List */}
+      <div>
+        <h2 className='text-xl font-semibold text-gray-900 mb-4'>
+          Seus Modelos
+        </h2>
+        <ModelsList />
       </div>
     </div>
   );
