@@ -7,3 +7,5 @@ export { default as NumberInput } from './NumberInput';
 export { default as Select } from './Select';
 export { default as Button } from './Button';
 export { default as Modal } from './Modal';
+export { PollingIndicator } from './PollingIndicator';
+export { default as Toast } from './Toast';

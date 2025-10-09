@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { AlertCircle, Loader2, RefreshCw } from 'lucide-react';
 import { ModelCard } from '../../molecules';
 import {
   ConfirmDeleteModal,
@@ -18,9 +18,9 @@ const ModelsList: React.FC<ModelsListProps> = ({ className = '' }) => {
     createTraining,
     deleteTraining,
     copyModelParams,
+    isPolling,
   } = useModels();
 
-  // States for modals
   const [expandedModels, setExpandedModels] = useState<Set<string>>(new Set());
   const [deleteModalState, setDeleteModalState] = useState<{
     isOpen: boolean;
@@ -50,7 +50,6 @@ const ModelsList: React.FC<ModelsListProps> = ({ className = '' }) => {
     creatingTraining: null,
   });
 
-  // Toggle model expansion
   const handleToggleExpanded = (modelId: string) => {
     setExpandedModels(prev => {
       const newSet = new Set(prev);
@@ -63,7 +62,6 @@ const ModelsList: React.FC<ModelsListProps> = ({ className = '' }) => {
     });
   };
 
-  // Handle model deletion
   const handleDeleteModel = (model: Model) => {
     setDeleteModalState({
       isOpen: true,
@@ -88,13 +86,11 @@ const ModelsList: React.FC<ModelsListProps> = ({ className = '' }) => {
       });
     } catch (error) {
       console.error('Failed to delete model:', error);
-      // You could add a toast notification here
     } finally {
       setActionLoading(prev => ({ ...prev, deletingModel: null }));
     }
   };
 
-  // Handle training deletion
   const handleDeleteTraining = (modelId: string, trainingId: string) => {
     const model = models.find(m => m.id === modelId);
 
@@ -131,7 +127,6 @@ const ModelsList: React.FC<ModelsListProps> = ({ className = '' }) => {
     }
   };
 
-  // Handle new training
   const handleNewTraining = (model: Model) => {
     setTrainingModalState({
       isOpen: true,
@@ -162,13 +157,14 @@ const ModelsList: React.FC<ModelsListProps> = ({ className = '' }) => {
     }
   };
 
-  // Handle copy params
-  const handleCopyParams = (model: Model) => {
-    copyModelParams(model);
-    // You could add a toast notification here to confirm the copy
+  const handleCopyParams = async (model: Model) => {
+    try {
+      await copyModelParams(model.id);
+    } catch (error) {
+      console.error('Failed to copy model params:', error);
+    }
   };
 
-  // Loading state
   if (loading) {
     return (
       <div className={`flex items-center justify-center py-12 ${className}`}>
@@ -206,6 +202,16 @@ const ModelsList: React.FC<ModelsListProps> = ({ className = '' }) => {
 
   return (
     <div className={`space-y-4 ${className}`}>
+      {/* Polling Status Indicator */}
+      {isPolling && (
+        <div className='flex items-center justify-center py-2 px-4 bg-blue-50 border border-blue-200 rounded-lg'>
+          <RefreshCw className='h-4 w-4 text-blue-600 animate-spin mr-2' />
+          <span className='text-sm text-blue-800'>
+            Monitorando treinamentos em andamento...
+          </span>
+        </div>
+      )}
+
       {/* Models List */}
       {models.map(model => (
         <ModelCard

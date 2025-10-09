@@ -11,3 +11,4 @@ export { SelectField } from './SelectField';
 export { default as ModelCard } from './ModelCard';
 export { default as TrainingCard } from './TrainingCard';
 export { ConfirmDeleteModal, NewTrainingModal } from './ModalsContainer';
+export { TrainingButton } from './TrainingButton';

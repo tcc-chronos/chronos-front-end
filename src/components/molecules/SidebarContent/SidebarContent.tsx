@@ -28,10 +28,8 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
         )}
       </div>
 
-      {/* Conteúdo principal */}
       <div className='flex-1 text-sm'>{children}</div>
 
-      {/* Footer opcional */}
       {footer && <div className='pt-4 border-t border-gray-200'>{footer}</div>}
     </div>
   );

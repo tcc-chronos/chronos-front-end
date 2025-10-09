@@ -2,11 +2,6 @@ import React from 'react';
 import { NavigationLink } from '../../atoms/NavigationLink';
 import type { NavigationProps } from './Navigation.types';
 
-/**
- * Componente Navigation
- *
- * Molécula que agrupa links de navegação usando NavigationLink
- */
 const Navigation: React.FC<NavigationProps> = ({
   items,
   className = '',

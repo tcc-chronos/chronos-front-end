@@ -2,11 +2,6 @@ import React from 'react';
 import type { NavigationLinkProps } from './NavigationLink.types';
 import { NavLink } from 'react-router-dom';
 
-/**
- * Componente NavigationLink
- *
- * Átomo para links de navegação com estados ativo/inativo usando React Router
- */
 const NavigationLink: React.FC<NavigationLinkProps> = ({
   children,
   href,

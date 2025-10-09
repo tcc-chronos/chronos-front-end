@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { NumberInputField, SidebarContent } from '../';
-import { Button } from '../../atoms';
+import { NumberInputField, SidebarContent, TrainingButton } from '../';
 import type { DataTrainingSidebarContentProps } from './DataTrainingSidebarContent.types';
 import { useTrainingSidebarStore } from '../../../store/trainingSidebarStore';
 
@@ -32,10 +31,18 @@ const DataTrainingSidebarContent: React.FC<DataTrainingSidebarContentProps> = ({
     !value || value < 0.000001 || value > 1
       ? 'Taxa de aprendizado deve estar entre 0.000001 e 1'
       : undefined;
-  const validateEarlyStoppingPatience = (value: number | undefined) =>
-    value !== undefined && value < 1
-      ? 'Paciência de early stopping deve ser no mínimo 1'
-      : undefined;
+  const validateEarlyStoppingPatience = (value?: number) => {
+    if (value === undefined || value === null) {
+      return undefined;
+    }
+
+    if (Number(value) < 1) {
+      return 'Paciência de early stopping deve ser no mínimo 1';
+    }
+
+    return undefined;
+  };
+
   const validateEpochs = (value: number | undefined) =>
     !value || value < 1 ? 'Épocas deve ser no mínimo 1' : undefined;
   const validateForecastHorizon = (value: number | undefined) =>
@@ -148,9 +155,7 @@ const DataTrainingSidebarContent: React.FC<DataTrainingSidebarContentProps> = ({
         />
       </div>
       <div className='fixed bottom-0 bg-white pb-2 border-gray-200 w-70'>
-        <Button variant='primary' fullWidth>
-          Adicionar Modelo
-        </Button>
+        <TrainingButton variant='primary' fullWidth />
       </div>
     </SidebarContent>
   );

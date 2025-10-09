@@ -1,11 +1,18 @@
 import { Outlet } from 'react-router-dom';
-import { Header, Sidebar } from '../../organisms';
+import {
+  Header,
+  Sidebar,
+  ToastContainer,
+  ApiErrorInterceptor,
+} from '../../organisms';
 import { SidebarProvider } from '../../../hooks/SidebarProvider';
 
 const DefaultLayout = () => {
   return (
     <SidebarProvider>
-      <div className='min-h-screen bg-gray-50 flex flex-col'>
+      <ApiErrorInterceptor />
+
+      <div className='min-h-screen bg-gray-50 flex flex-col transition-all duration-500'>
         <Header />
 
         <div className='flex flex-1 min-h-0'>
@@ -17,6 +24,8 @@ const DefaultLayout = () => {
             </div>
           </main>
         </div>
+
+        <ToastContainer />
       </div>
     </SidebarProvider>
   );

@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen } from '../../../test/test-utils';
 import { describe, it, expect, vi } from 'vitest';
 import DataTrainingSidebarContent from './DataTrainingSidebarContent';
 
@@ -11,6 +11,8 @@ vi.mock('../../../store/trainingSidebarStore', () => ({
     early_stopping_patience: 5,
     volume: 1000,
     setField: vi.fn(),
+    isValid: vi.fn(() => false),
+    getCreateModelPayload: vi.fn(),
   })),
 }));
 
@@ -20,11 +22,9 @@ describe('DataTrainingSidebarContent', () => {
 
     expect(screen.getByLabelText(/janela de entrada/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/taxa de aprendizado/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/taxa de dropout/i)).toBeInTheDocument();
     expect(
       screen.getByLabelText(/paciência de early stopping/i)
     ).toBeInTheDocument();
-    expect(screen.getByLabelText(/volume de treinamento/i)).toBeInTheDocument();
   });
 
   it('renders with default className', () => {

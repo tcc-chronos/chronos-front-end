@@ -37,7 +37,7 @@ const TrainingCard: React.FC<TrainingCardProps> = ({ training, onDelete }) => {
   return (
     <div className='bg-gray-50 rounded-lg p-4 border border-gray-200'>
       <div className='flex items-center justify-between'>
-        <div className='flex-1 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 text-sm'>
+        <div className='flex-1 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 text-sm'>
           {/* Data de treinamento */}
           <div>
             <span className='text-gray-500 block text-xs'>
@@ -75,6 +75,13 @@ const TrainingCard: React.FC<TrainingCardProps> = ({ training, onDelete }) => {
             <span className='text-gray-500 block text-xs'>RMSE</span>
             <span className='font-medium text-black'>
               {formatMetric(training.metrics.rmse)}
+            </span>
+          </div>
+
+          <div>
+            <span className='text-gray-500 block text-xs'>Theil U</span>
+            <span className='font-medium text-black'>
+              {formatMetric(training.metrics.theil_u)}
             </span>
           </div>
 

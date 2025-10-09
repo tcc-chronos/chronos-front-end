@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen } from '../../../test/test-utils';
 import { describe, it, expect, vi } from 'vitest';
 import RNNTrainingSidebarContent from './RNNTrainingSidebarContent';
 
@@ -8,6 +8,8 @@ vi.mock('../../../store/trainingSidebarStore', () => ({
     rnn_units: [128],
     dense_units: [64],
     setField: vi.fn(),
+    isValid: vi.fn(() => false),
+    getCreateModelPayload: vi.fn(),
   })),
 }));
 

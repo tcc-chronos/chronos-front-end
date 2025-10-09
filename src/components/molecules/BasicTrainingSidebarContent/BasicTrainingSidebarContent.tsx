@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { SidebarContent, SelectField } from '../';
+import React, { useState } from 'react';
+import { SidebarContent, SelectField, TrainingButton } from '../';
 import { useTrainingSidebarStore } from '../../../store/trainingSidebarStore';
+import { useDevices } from '../../../hooks/useDevices';
+import { useModelTypes } from '../../../hooks/useModelTypes';
 import type { BasicTrainingSidebarContentProps } from './BasicTrainingSidebarContent.types';
-import { Button } from '../..';
 
 interface ValidationErrors {
   rnn_type?: string;
@@ -20,50 +21,26 @@ const BasicTrainingSidebarContent: React.FC<
     useTrainingSidebarStore();
   const [errors, setErrors] = useState<ValidationErrors>({});
 
-  const rnnTypeOptions = [
-    { value: 'lstm', label: 'LSTM' },
-    { value: 'gru', label: 'GRU' },
-  ];
+  // Use devices hook for real API data
+  const {
+    deviceTypes,
+    deviceEntities,
+    deviceAttributes,
+    isLoading,
+    error: devicesError,
+    setSelectedDeviceType,
+    setSelectedEntityId,
+  } = useDevices({
+    initialDeviceType: entity_type,
+    initialEntityId: entity_id,
+  });
 
-  const [entityTypeOptions] = useState<{ value: string; label: string }[]>([
-    { value: 'sensor', label: 'Sensor' },
-    { value: 'equipamento', label: 'Equipamento' },
-    { value: 'ambiente', label: 'Ambiente' },
-  ]);
-  const [entityIdOptions, setEntityIdOptions] = useState<
-    { value: string; label: string }[]
-  >([]);
-  const [featureOptions, setFeatureOptions] = useState<
-    { value: string; label: string }[]
-  >([]);
-
-  useEffect(() => {
-    // Mock: Carregar opções de entity_id baseado no tipo
-    if (entity_type) {
-      setTimeout(() => {
-        setEntityIdOptions([
-          { value: 'cpu', label: 'CPU' },
-          { value: 'gpu', label: 'GPU' },
-          { value: 'tpu', label: 'TPU' },
-        ]);
-      }, 500);
-    } else {
-      setEntityIdOptions([]);
-    }
-  }, [entity_type]);
-
-  useEffect(() => {
-    // Mock: Carregar opções de feature baseado no entity_id
-    if (entity_id) {
-      setFeatureOptions([
-        { value: 'temperature', label: 'Temperatura' },
-        { value: 'voltage', label: 'Tensão' },
-        { value: 'current', label: 'Corrente' },
-      ]);
-    } else {
-      setFeatureOptions([]);
-    }
-  }, [entity_id]);
+  // Use model types hook for dynamic RNN types
+  const {
+    modelTypes: rnnTypeOptions,
+    loading: modelTypesLoading,
+    error: modelTypesError,
+  } = useModelTypes();
 
   const validateRnnType = (value: string | undefined) =>
     !value ? 'Tipo de RNN obrigatório' : undefined;
@@ -79,22 +56,34 @@ const BasicTrainingSidebarContent: React.FC<
     setErrors(prev => ({ ...prev, rnn_type: validateRnnType(String(value)) }));
   };
   const handleEntityTypeChange = (value: string | number) => {
-    setField('entity_type', String(value));
+    const stringValue = String(value);
+    setField('entity_type', stringValue);
     setField('entity_id', undefined);
     setField('feature', undefined);
+
+    // Update devices hook state
+    setSelectedDeviceType(stringValue);
+    setSelectedEntityId(undefined);
+
     setErrors(prev => ({
       ...prev,
-      entity_type: validateEntityType(String(value)),
+      entity_type: validateEntityType(stringValue),
       entity_id: undefined,
       feature: undefined,
     }));
   };
+
   const handleEntityIdChange = (value: string | number) => {
-    setField('entity_id', String(value));
+    const stringValue = String(value);
+    setField('entity_id', stringValue);
     setField('feature', undefined);
+
+    // Update devices hook state
+    setSelectedEntityId(stringValue);
+
     setErrors(prev => ({
       ...prev,
-      entity_id: validateEntityId(String(value)),
+      entity_id: validateEntityId(stringValue),
       feature: undefined,
     }));
   };
@@ -106,9 +95,26 @@ const BasicTrainingSidebarContent: React.FC<
     }));
   };
 
+  // Show error message if devices failed to load
+  if (devicesError) {
+    return (
+      <SidebarContent
+        title='Configuração de Modelo'
+        variant='default'
+        className={className}
+        {...props}
+      >
+        <div className='p-4 text-red-600 bg-red-50 rounded-md'>
+          <p className='font-medium'>Erro ao carregar dispositivos:</p>
+          <p className='text-sm mt-1'>{devicesError}</p>
+        </div>
+      </SidebarContent>
+    );
+  }
+
   return (
     <SidebarContent
-      title='Configuração de Treinamento'
+      title='Configuração de Modelo'
       variant='default'
       className={className}
       {...props}
@@ -121,9 +127,10 @@ const BasicTrainingSidebarContent: React.FC<
           onChange={handleRnnTypeChange}
           options={rnnTypeOptions}
           placeholder='Selecione o tipo de RNN'
-          error={errors.rnn_type}
+          error={errors.rnn_type || modelTypesError || undefined}
           infoTooltip='Tipo de rede neural recorrente.'
           required
+          loading={modelTypesLoading}
         />
 
         <SelectField
@@ -131,11 +138,12 @@ const BasicTrainingSidebarContent: React.FC<
           label='Tipo de dispositivo:'
           value={entity_type}
           onChange={handleEntityTypeChange}
-          options={entityTypeOptions}
+          options={deviceTypes}
           placeholder='Selecione o tipo de dispositivo'
           error={errors.entity_type}
           infoTooltip='Tipo de entidade/dispositivo.'
           required
+          loading={isLoading}
         />
 
         <SelectField
@@ -143,12 +151,12 @@ const BasicTrainingSidebarContent: React.FC<
           label='Dispositivo:'
           value={entity_id}
           onChange={handleEntityIdChange}
-          options={entityIdOptions}
+          options={deviceEntities}
           placeholder='Selecione o dispositivo'
           error={errors.entity_id}
           infoTooltip='Identificador do dispositivo.'
           required
-          loading={entityTypeOptions.length === 0}
+          loading={isLoading || deviceEntities.length === 0}
           disabled={!entity_type}
         />
 
@@ -157,19 +165,17 @@ const BasicTrainingSidebarContent: React.FC<
           label='Atributo:'
           value={feature}
           onChange={handleFeatureChange}
-          options={featureOptions}
+          options={deviceAttributes}
           placeholder='Selecione o atributo'
           error={errors.feature}
           infoTooltip='Atributo/feature do dispositivo.'
           required
-          loading={Boolean(entity_id && featureOptions.length === 0)}
+          loading={isLoading || deviceAttributes.length === 0}
           disabled={!entity_id}
         />
 
         <div className='fixed bottom-0 bg-white pb-2 border-gray-200 w-70'>
-          <Button variant='primary' fullWidth>
-            Adicionar Modelo
-          </Button>
+          <TrainingButton variant='primary' fullWidth />
         </div>
       </div>
     </SidebarContent>

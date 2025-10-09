@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ModelsService } from '../services/models';
 import { ModelsAdapter } from '../utils/modelsAdapter';
-import { useTrainingPolling } from './useTrainingPolling';
 import { useTrainingSidebarStore } from '../store/trainingSidebarStore';
 import { useApiErrorHandler } from './useApiErrorHandler';
 import type { Model, CreateTrainingRequest } from '../types/training';
@@ -15,7 +14,6 @@ interface UseModelsReturn {
   createTraining: (request: CreateTrainingRequest) => Promise<void>;
   deleteTraining: (modelId: string, trainingId: string) => Promise<void>;
   copyModelParams: (modelId: string) => Promise<void>;
-  isPolling: boolean;
 }
 
 /**
@@ -160,7 +158,6 @@ export const useModels = (): UseModelsReturn => {
         setFields(sidebarData);
 
         console.log('Model parameters copied successfully:', modelData.name);
-
         handleApiSuccess(
           'Parâmetros copiados com sucesso!',
           `Os parâmetros do modelo "${modelData.name}" foram copiados para o formulário.`
@@ -179,36 +176,9 @@ export const useModels = (): UseModelsReturn => {
     [handleApiError, handleApiSuccess]
   );
 
-  // Handle model updates from polling
-  const handleModelUpdate = useCallback((updatedModel: Model) => {
-    setModels(prev =>
-      prev.map(model => (model.id === updatedModel.id ? updatedModel : model))
-    );
-  }, []);
-
-  // Training polling for real-time updates (temporarily disabled)
-  const { isPolling } = useTrainingPolling({
-    models,
-    onModelUpdate: handleModelUpdate,
-    pollingInterval: 5000, // Poll every 5 seconds
-    enabled: false, // Temporarily disabled to prevent spam
-  });
-
   // Fetch models on mount
   useEffect(() => {
     fetchModels();
-  }, [fetchModels]);
-
-  // Listen for refresh events
-  useEffect(() => {
-    const handleRefresh = () => {
-      fetchModels();
-    };
-
-    window.addEventListener('refreshModels', handleRefresh);
-    return () => {
-      window.removeEventListener('refreshModels', handleRefresh);
-    };
   }, [fetchModels]);
 
   return {
@@ -220,6 +190,5 @@ export const useModels = (): UseModelsReturn => {
     createTraining,
     deleteTraining,
     copyModelParams,
-    isPolling, // Expose polling state
   };
 };

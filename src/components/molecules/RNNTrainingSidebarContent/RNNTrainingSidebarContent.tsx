@@ -1,6 +1,11 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { Button } from '../../atoms';
-import { NumberInputField, SidebarContent, SelectField } from '../';
+import {
+  NumberInputField,
+  SidebarContent,
+  SelectField,
+  TrainingButton,
+} from '../';
 import { SortableList } from '../SortableList';
 import { useTrainingSidebarStore } from '../../../store/trainingSidebarStore';
 import type {
@@ -216,9 +221,7 @@ const RNNTrainingSidebarContent: React.FC<RNNTrainingSidebarContentProps> = ({
         />
       </div>
       <div className='fixed bottom-0 bg-white pb-2 border-gray-200 w-70'>
-        <Button variant='primary' fullWidth>
-          Adicionar Modelo
-        </Button>
+        <TrainingButton variant='primary' fullWidth />
       </div>
     </SidebarContent>
   );

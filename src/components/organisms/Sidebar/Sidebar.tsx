@@ -44,7 +44,10 @@ const Sidebar: React.FC<Partial<SidebarProps>> = ({
       </div>
 
       {activeItem && activeItem.content && (
-        <div className='w-80 flex flex-col bg-white min-h-full'>
+        <div
+          className='w-80 flex flex-col bg-white min-h-full transition-all duration-500 ease-in-out opacity-100 translate-x-0'
+          style={{ willChange: 'width, opacity, transform' }}
+        >
           <div className='flex-1 overflow-y-auto'>{activeItem.content}</div>
         </div>
       )}
