@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SidebarContent, SelectField, TrainingButton } from '../';
 import { useTrainingSidebarStore } from '../../../store/trainingSidebarStore';
 import { useDevices } from '../../../hooks/useDevices';
@@ -30,10 +30,24 @@ const BasicTrainingSidebarContent: React.FC<
     error: devicesError,
     setSelectedDeviceType,
     setSelectedEntityId,
+    refetch: refetchDevices,
   } = useDevices({
     initialDeviceType: entity_type,
     initialEntityId: entity_id,
+    autoFetch: false, // Don't auto-fetch on mount
   });
+
+  // Fetch devices only when user interacts with dropdowns or component becomes visible
+  const [hasInteracted, setHasInteracted] = useState(false);
+
+  useEffect(() => {
+    if (hasInteracted && deviceTypes.length === 0 && !isLoading) {
+      console.log(
+        'BasicTrainingSidebarContent: Fetching devices due to user interaction'
+      );
+      refetchDevices();
+    }
+  }, [hasInteracted, deviceTypes.length, isLoading, refetchDevices]);
 
   // Use model types hook for dynamic RNN types
   const {
@@ -56,6 +70,11 @@ const BasicTrainingSidebarContent: React.FC<
     setErrors(prev => ({ ...prev, rnn_type: validateRnnType(String(value)) }));
   };
   const handleEntityTypeChange = (value: string | number) => {
+    // Mark that user has interacted with devices dropdown
+    if (!hasInteracted) {
+      setHasInteracted(true);
+    }
+
     const stringValue = String(value);
     setField('entity_type', stringValue);
     setField('entity_id', undefined);
@@ -138,6 +157,11 @@ const BasicTrainingSidebarContent: React.FC<
           label='Tipo de dispositivo:'
           value={entity_type}
           onChange={handleEntityTypeChange}
+          onFocus={() => {
+            if (!hasInteracted) {
+              setHasInteracted(true);
+            }
+          }}
           options={deviceTypes}
           placeholder='Selecione o tipo de dispositivo'
           error={errors.entity_type}

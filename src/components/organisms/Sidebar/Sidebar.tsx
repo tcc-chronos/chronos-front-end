@@ -20,7 +20,7 @@ const Sidebar: React.FC<Partial<SidebarProps>> = ({
   const activeItem = items.find(item => item.id === activeItemId);
 
   const baseClasses =
-    'min-h-full bg-white border-r border-gray-200 shadow-lg flex z-40';
+    'h-full bg-white border-r border-gray-200 shadow-lg flex z-40';
 
   return (
     <div
@@ -28,7 +28,7 @@ const Sidebar: React.FC<Partial<SidebarProps>> = ({
       role='complementary'
       {...props}
     >
-      <div className='w-20 flex flex-col items-center py-4 space-y-2 bg-white border-r border-gray-200 min-h-full'>
+      <div className='w-20 flex flex-col items-center py-4 space-y-2 bg-white border-r border-gray-200 h-full'>
         {items.map(item => (
           <SidebarItem
             key={item.id}
@@ -45,7 +45,7 @@ const Sidebar: React.FC<Partial<SidebarProps>> = ({
 
       {activeItem && activeItem.content && (
         <div
-          className='w-80 flex flex-col bg-white min-h-full transition-all duration-500 ease-in-out opacity-100 translate-x-0'
+          className='w-80 flex flex-col bg-white h-full transition-all duration-500 ease-in-out opacity-100 translate-x-0'
           style={{ willChange: 'width, opacity, transform' }}
         >
           <div className='flex-1 overflow-y-auto'>{activeItem.content}</div>

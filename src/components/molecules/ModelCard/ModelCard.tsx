@@ -37,33 +37,42 @@ const ModelCard: React.FC<ModelCardProps> = ({
     <div className='bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow'>
       {/* Card Header */}
       <div className='p-6'>
-        <div className='flex items-center justify-between'>
-          <div className='flex-1'>
+        <div className='flex items-start justify-between sm:items-center flex-col sm:flex-row gap-4'>
+          <div className='flex-1 w-full'>
             <h3 className='text-md font-semibold text-gray-900 mb-2'>
               {model.name}
             </h3>
-            <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 text-sm'>
-              <div>
+            <div
+              className='grid gap-4 text-sm'
+              style={{
+                gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+              }}
+            >
+              <div className='min-w-0'>
                 <span className='text-gray-500 block'>Tipo de RNN</span>
-                <span className='font-medium text-black'>{model.rnnType}</span>
+                <span className='font-medium text-black break-words'>
+                  {model.rnnType}
+                </span>
               </div>
-              <div>
+              <div className='min-w-0'>
                 <span className='text-gray-500 block'>Data de criação</span>
-                <span className='font-medium text-black'>
+                <span className='font-medium text-black break-words'>
                   {formatDate(model.createdAt)}
                 </span>
               </div>
-              <div>
+              <div className='min-w-0 max-w-[150px]'>
                 <span className='text-gray-500 block'>Dispositivo</span>
-                <span className='font-medium text-black'>{model.device}</span>
+                <span className='font-medium text-black break-words hyphens-auto leading-tight'>
+                  {model.device}
+                </span>
               </div>
-              <div>
+              <div className='min-w-0'>
                 <span className='text-gray-500 block'>Atributo</span>
-                <span className='font-medium text-black'>
+                <span className='font-medium text-black break-words'>
                   {model.attribute}
                 </span>
               </div>
-              <div>
+              <div className='min-w-0'>
                 <span className='text-gray-500 block'>Status</span>
                 <span
                   className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
@@ -77,7 +86,7 @@ const ModelCard: React.FC<ModelCardProps> = ({
           </div>
 
           {/* Action Buttons */}
-          <div className='flex items-center space-x-2 ml-6'>
+          <div className='flex items-center ml-0 sm:ml-6 lg:ml-6 flex-row sm:flex-col lg:flex-row space-x-2 sm:space-x-0 lg:space-x-2 space-y-0 sm:space-y-2 lg:space-y-0 w-full sm:w-auto lg:w-auto'>
             <IconButton
               icon={<Copy size={16} />}
               onClick={onCopyParams}

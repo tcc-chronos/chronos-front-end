@@ -1,21 +1,28 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   NotificationContext,
   type Notification,
   type NotificationContextType,
 } from '../contexts/NotificationContext';
 
+// Constants for better maintainability
+const DEFAULT_NOTIFICATION_DURATION = 5000; // 5 seconds
+const ANIMATION_DURATION = 300; // milliseconds
+
 interface NotificationProviderProps {
   children: React.ReactNode;
+  maxNotifications?: number; // Limit concurrent notifications
 }
 
 export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   children,
+  maxNotifications = 5,
 }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
+  // Memoized ID generator for better performance
   const generateId = useCallback(() => {
-    return `notification-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    return `notification-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
   }, []);
 
   const removeNotification = useCallback((id: string) => {
@@ -30,7 +37,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
     // Remove completely after animation
     setTimeout(() => {
       setNotifications(prev => prev.filter(n => n.id !== id));
-    }, 300);
+    }, ANIMATION_DURATION);
   }, []);
 
   const addNotification = useCallback(
@@ -43,10 +50,24 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
         id,
         isVisible: true,
         createdAt: new Date(),
-        duration: notification.duration ?? 5000, // Default 5 seconds
+        duration: notification.duration ?? DEFAULT_NOTIFICATION_DURATION,
       };
 
-      setNotifications(prev => [...prev, newNotification]);
+      // Limit concurrent notifications
+      setNotifications(prev => {
+        const updated = [...prev, newNotification];
+        if (updated.length > maxNotifications) {
+          // Remove oldest visible notifications
+          const visibleNotifications = updated.filter(n => n.isVisible);
+          const toRemove = visibleNotifications.slice(
+            0,
+            visibleNotifications.length - maxNotifications
+          );
+          toRemove.forEach(n => removeNotification(n.id));
+          return updated.slice(-maxNotifications);
+        }
+        return updated;
+      });
 
       // Auto-dismiss if duration > 0
       if (newNotification.duration && newNotification.duration > 0) {
@@ -57,7 +78,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
 
       return id;
     },
-    [generateId, removeNotification]
+    [generateId, removeNotification, maxNotifications]
   );
 
   const clearAll = useCallback(() => {
@@ -68,7 +89,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
     // Remove all after animation
     setTimeout(() => {
       setNotifications([]);
-    }, 300);
+    }, ANIMATION_DURATION);
   }, []);
 
   // Convenience methods
@@ -100,16 +121,29 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
     [addNotification]
   );
 
-  const contextValue: NotificationContextType = {
-    notifications,
-    addNotification,
-    removeNotification,
-    clearAll,
-    addError,
-    addSuccess,
-    addWarning,
-    addInfo,
-  };
+  // Memoize context value to prevent unnecessary re-renders
+  const contextValue: NotificationContextType = useMemo(
+    () => ({
+      notifications,
+      addNotification,
+      removeNotification,
+      clearAll,
+      addError,
+      addSuccess,
+      addWarning,
+      addInfo,
+    }),
+    [
+      notifications,
+      addNotification,
+      removeNotification,
+      clearAll,
+      addError,
+      addSuccess,
+      addWarning,
+      addInfo,
+    ]
+  );
 
   return (
     <NotificationContext.Provider value={contextValue}>

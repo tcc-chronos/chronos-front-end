@@ -10,7 +10,7 @@ interface UseTrainingSubmissionReturn {
   isSubmitting: boolean;
   error: string | null;
   submitTraining: (onSuccess?: () => void) => Promise<void>;
-  isValid: boolean;
+  isValid: () => boolean;
 }
 
 /**

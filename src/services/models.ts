@@ -1,27 +1,10 @@
 import { api } from './api';
 import type { ApiModel } from '../types/training';
 import type { CreateModelPayload } from '../store/trainingSidebarStore';
+import type { DevicesResponse, ModelType } from '../types/api';
 
-// Device types
-export interface DeviceEntity {
-  entity_name: string;
-  attributes: string[];
-}
-
-export interface DeviceType {
-  entity_type: string;
-  entities: DeviceEntity[];
-}
-
-export interface DevicesResponse {
-  devices: DeviceType[];
-}
-
-// Model types
-export interface ModelType {
-  value: string;
-  label: string;
-}
+// Re-export types for convenience
+export type { ModelType, DevicesResponse };
 
 /**
  * Models service - handles all model-related API calls

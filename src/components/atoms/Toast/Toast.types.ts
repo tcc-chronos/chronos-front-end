@@ -1,8 +1,9 @@
-export interface ToastProps {
-  id: string;
-  type: 'error' | 'success' | 'warning' | 'info';
-  title: string;
-  message?: string;
-  isVisible: boolean;
+import type { Notification } from '../../../contexts/NotificationContext';
+
+export interface ToastProps
+  extends Pick<
+    Notification,
+    'id' | 'type' | 'title' | 'message' | 'isVisible'
+  > {
   onClose: (id: string) => void;
 }

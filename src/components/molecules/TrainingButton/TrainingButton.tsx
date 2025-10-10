@@ -14,8 +14,7 @@ export const TrainingButton: React.FC<TrainingButtonProps> = ({
   fullWidth = false,
   onSuccess,
 }) => {
-  const { isSubmitting, error, submitTraining, isValid } =
-    useTrainingSubmission();
+  const { isSubmitting, submitTraining, isValid } = useTrainingSubmission();
   const { refreshModels } = useModelsRefresh();
 
   const handleClick = () => {
@@ -38,12 +37,6 @@ export const TrainingButton: React.FC<TrainingButtonProps> = ({
       >
         {isSubmitting ? 'Criando Modelo...' : 'Criar Modelo'}
       </Button>
-
-      {error && (
-        <div className='text-sm text-red-600 bg-red-50 p-2 rounded-md'>
-          {error}
-        </div>
-      )}
     </div>
   );
 };

@@ -1,15 +1,33 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useNotifications } from './useNotifications';
+
+// Constants for better maintainability
+const ERROR_MESSAGES = {
+  400: 'Dados inválidos enviados para o servidor',
+  401: 'Acesso não autorizado',
+  403: 'Você não tem permissão para esta ação',
+  404: 'Recurso não encontrado',
+  500: 'Erro interno do servidor',
+  FETCH_FAILED: 'Não foi possível conectar ao servidor',
+  DEFAULT: 'Erro inesperado',
+} as const;
+
+const NOTIFICATION_DURATIONS = {
+  ERROR: 8000,
+  SUCCESS: 4000,
+} as const;
 
 /**
  * Hook para capturar e exibir erros de API automaticamente
+ * Aplica padrões de tratamento de erro consistentes em toda a aplicação
  */
 export const useApiErrorHandler = () => {
   const { addError, addSuccess } = useNotifications();
 
-  const handleApiError = useCallback(
-    (error: unknown, customMessage?: string) => {
-      let errorMessage = 'Erro inesperado';
+  // Memoize error message mapping for performance
+  const getErrorMessage = useMemo(() => {
+    return (error: unknown): string => {
+      let errorMessage: string = ERROR_MESSAGES.DEFAULT;
 
       if (error instanceof Error) {
         errorMessage = error.message;
@@ -17,33 +35,41 @@ export const useApiErrorHandler = () => {
         errorMessage = error;
       }
 
-      // Extract more specific error messages if possible
+      // Map HTTP errors to user-friendly messages
       if (errorMessage.includes('HTTP error! status: 400')) {
-        errorMessage = 'Dados inválidos enviados para o servidor';
+        return ERROR_MESSAGES[400];
       } else if (errorMessage.includes('HTTP error! status: 401')) {
-        errorMessage = 'Acesso não autorizado';
+        return ERROR_MESSAGES[401];
       } else if (errorMessage.includes('HTTP error! status: 403')) {
-        errorMessage = 'Você não tem permissão para esta ação';
+        return ERROR_MESSAGES[403];
       } else if (errorMessage.includes('HTTP error! status: 404')) {
-        errorMessage = 'Recurso não encontrado';
+        return ERROR_MESSAGES[404];
       } else if (errorMessage.includes('HTTP error! status: 500')) {
-        errorMessage = 'Erro interno do servidor';
+        return ERROR_MESSAGES[500];
       } else if (errorMessage.includes('Failed to fetch')) {
-        errorMessage = 'Não foi possível conectar ao servidor';
+        return ERROR_MESSAGES.FETCH_FAILED;
       }
+
+      return errorMessage;
+    };
+  }, []);
+
+  const handleApiError = useCallback(
+    (error: unknown, customMessage?: string) => {
+      const errorMessage = getErrorMessage(error);
 
       addError(
         customMessage || 'Erro na operação',
         errorMessage,
-        8000 // 8 seconds for errors
+        NOTIFICATION_DURATIONS.ERROR
       );
     },
-    [addError]
+    [addError, getErrorMessage]
   );
 
   const handleApiSuccess = useCallback(
     (message: string, details?: string) => {
-      addSuccess(message, details, 4000); // 4 seconds for success
+      addSuccess(message, details, NOTIFICATION_DURATIONS.SUCCESS);
     },
     [addSuccess]
   );

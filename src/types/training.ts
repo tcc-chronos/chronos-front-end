@@ -95,10 +95,7 @@ export interface CreateTrainingRequest {
   dataVolume: number;
 }
 
-export interface CreateTrainingData {
-  dataVolume: number;
-}
-
+// Unified interface for training form data (consolidates CreateTrainingData and TrainingFormData)
 export interface TrainingFormData {
   dataVolume: number;
 }

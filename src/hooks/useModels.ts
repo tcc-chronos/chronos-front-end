@@ -186,13 +186,32 @@ export const useModels = (): UseModelsReturn => {
     );
   }, []);
 
-  // Training polling for real-time updates (temporarily disabled)
+  // Training polling for real-time updates - only when models are training
+  const hasActiveTrainings = models.some(model => {
+    // If model is actively training, has active trainings
+    if (model.status === 'training') {
+      return true;
+    }
+
+    // Otherwise, check if there are any non-final trainings
+    return model.trainings.some(
+      training => training.status === 'pending' || training.status === 'running'
+    );
+  });
+
   const { isPolling } = useTrainingPolling({
     models,
     onModelUpdate: handleModelUpdate,
     pollingInterval: 5000, // Poll every 5 seconds
-    enabled: false, // Temporarily disabled to prevent spam
+    enabled: hasActiveTrainings, // Only enabled when there are active trainings
   });
+
+  // Debug logging for polling state
+  useEffect(() => {
+    console.log(
+      `Training polling status: ${isPolling ? 'ACTIVE' : 'INACTIVE'} - Active trainings: ${hasActiveTrainings}`
+    );
+  }, [isPolling, hasActiveTrainings]);
 
   // Fetch models on mount
   useEffect(() => {

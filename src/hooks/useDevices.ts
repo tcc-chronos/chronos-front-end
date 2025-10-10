@@ -1,34 +1,40 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import {
-  DevicesService,
-  type DeviceType,
-  type DevicesResponse,
-} from '../services/models';
+import { DevicesService } from '../services/models';
+import type { DeviceType } from '../types/api';
 import { useApiErrorHandler } from './useApiErrorHandler';
 
-interface DropdownOption {
+// Types for better type safety
+export interface DropdownOption {
   value: string;
   label: string;
 }
 
-interface UseDevicesOptions {
+export interface UseDevicesOptions {
   initialDeviceType?: string;
   initialEntityId?: string;
+  autoFetch?: boolean; // Allow disabling auto-fetch - defaults to false
 }
 
 export interface UseDevicesReturn {
+  // Dropdown options
   deviceTypes: DropdownOption[];
   deviceEntities: DropdownOption[];
   deviceAttributes: DropdownOption[];
 
+  // Selection states
   selectedDeviceType: string | undefined;
   selectedEntityId: string | undefined;
 
+  // Selection handlers
   setSelectedDeviceType: (type: string | undefined) => void;
   setSelectedEntityId: (entityId: string | undefined) => void;
 
+  // Loading and error states
   isLoading: boolean;
   error: string | null;
+
+  // Actions
+  refetch: () => Promise<void>;
 
   // Raw data for advanced use cases
   rawDevices: DeviceType[];
@@ -36,16 +42,21 @@ export interface UseDevicesReturn {
 
 /**
  * Custom hook for managing device data and dropdown states
+ * Provides reactive device selection with memoized dropdown options
  */
-export const useDevices = (options: UseDevicesOptions = {}) => {
-  const { initialDeviceType, initialEntityId } = options;
+export const useDevices = (
+  options: UseDevicesOptions = {}
+): UseDevicesReturn => {
+  const { initialDeviceType, initialEntityId, autoFetch = false } = options;
+
+  // State management
   const [rawDevices, setRawDevices] = useState<DeviceType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const { handleApiError } = useApiErrorHandler();
 
-  // Selection states
+  // Selection states with proper initialization
   const [selectedDeviceType, setSelectedDeviceType] = useState<
     string | undefined
   >(initialDeviceType);
@@ -53,29 +64,35 @@ export const useDevices = (options: UseDevicesOptions = {}) => {
     initialEntityId
   );
 
-  // Fetch devices from API
-  const fetchDevices = useCallback(async () => {
+  // Fetch devices from API with proper error handling
+  const fetchDevices = useCallback(async (): Promise<void> => {
+    if (isLoading) return; // Prevent concurrent requests
+
     setIsLoading(true);
     setError(null);
 
     try {
-      const response: DevicesResponse = await DevicesService.getDevices();
+      const response = await DevicesService.getDevices();
       setRawDevices(response.devices || []);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Failed to fetch devices';
       setError(errorMessage);
       handleApiError(err, 'Carregamento de dispositivos');
-      console.error('Error fetching devices:', err);
     } finally {
       setIsLoading(false);
     }
-  }, [handleApiError]);
+  }, [handleApiError, isLoading]);
 
-  // Load devices on mount
+  // Auto-fetch on mount if enabled
   useEffect(() => {
-    fetchDevices();
-  }, [fetchDevices]);
+    if (autoFetch) {
+      console.log('useDevices: Auto-fetching devices');
+      fetchDevices();
+    } else {
+      console.log('useDevices: Auto-fetch disabled');
+    }
+  }, [autoFetch, fetchDevices]);
 
   // Memoized device types dropdown options
   const deviceTypes = useMemo((): DropdownOption[] => {
@@ -163,6 +180,8 @@ export const useDevices = (options: UseDevicesOptions = {}) => {
 
     isLoading,
     error,
+
+    refetch: fetchDevices,
 
     rawDevices,
   };

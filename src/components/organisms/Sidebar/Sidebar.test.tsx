@@ -61,7 +61,7 @@ describe('Sidebar', () => {
 
     const sidebar = screen.getByRole('complementary', { hidden: true });
     expect(sidebar).toHaveClass(
-      'min-h-full',
+      'h-full',
       'bg-white',
       'border-r',
       'border-gray-200'

@@ -7,7 +7,7 @@ import {
 } from '../../molecules';
 import { ModelsList } from '../../organisms';
 import { PollingIndicator } from '../../atoms';
-import { useSidebar } from '../../../hooks/useSidebarHook';
+import { useSidebar } from '../../../hooks/useSidebar';
 import { useModels } from '../../../hooks/useModels';
 
 const Training = () => {

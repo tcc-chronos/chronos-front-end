@@ -1,50 +1,64 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ModelsService } from '../services/models';
 import { ModelsAdapter } from '../utils/modelsAdapter';
 import type { Model } from '../types/training';
 
-interface UseTrainingPollingProps {
+// Constants for better maintainability
+const DEFAULT_POLLING_INTERVAL = 5000; // 5 seconds
+const MAX_RETRY_ATTEMPTS = 3;
+
+interface UseTrainingPollingOptions {
   models: Model[];
   onModelUpdate: (updatedModel: Model) => void;
-  pollingInterval?: number; // milliseconds
+  pollingInterval?: number;
   enabled?: boolean;
+  maxRetries?: number;
 }
 
 interface UseTrainingPollingReturn {
   startPolling: () => void;
   stopPolling: () => void;
   isPolling: boolean;
+  errorCount: number;
 }
 
 /**
  * Hook to manage polling for training updates
  * Monitors models with pending/running trainings and updates them periodically
+ * Includes error handling and automatic retry logic
  */
 export const useTrainingPolling = ({
   models,
   onModelUpdate,
-  pollingInterval = 5000, // 5 seconds default
+  pollingInterval = DEFAULT_POLLING_INTERVAL,
   enabled = true,
-}: UseTrainingPollingProps): UseTrainingPollingReturn => {
+  maxRetries = MAX_RETRY_ATTEMPTS,
+}: UseTrainingPollingOptions): UseTrainingPollingReturn => {
   const intervalRef = useRef<number | null>(null);
-  const isPollingRef = useRef(false);
+  const [isPolling, setIsPolling] = useState(false);
+  const [errorCount, setErrorCount] = useState(0);
+  const retryCountRef = useRef<Record<string, number>>({});
 
   /**
-   * Get models that have pending or running trainings
+   * Get models that have active trainings that need polling
+   * Considers both model status and individual training status
+   * Stops polling when:
+   * - Model status is not 'training' AND
+   * - All trainings are in final state ('completed' or 'failed')
    */
-  const getModelsWithPendingTrainings = useCallback((): string[] => {
+  const getModelsWithActiveTrainings = useCallback((): string[] => {
     return models
-      .filter(model =>
-        model.trainings.some(
-          training =>
-            training.status === 'pending' || training.status === 'running'
-        )
-      )
+      .filter(model => {
+        // If model is actively training, keep polling
+        if (model.status === 'training') {
+          return true;
+        }
+      })
       .map(model => model.id);
   }, [models]);
 
   /**
-   * Fetch updated model data from API
+   * Fetch updated model data from API with retry logic
    */
   const fetchModelUpdate = useCallback(
     async (modelId: string): Promise<void> => {
@@ -52,40 +66,66 @@ export const useTrainingPolling = ({
         const apiModel = await ModelsService.getModel(modelId);
         const legacyModel = ModelsAdapter.apiModelToLegacy(apiModel);
         onModelUpdate(legacyModel);
-      } catch (error) {
-        // For polling, we only log errors silently to avoid spam
-        // Only show user notification for repeated failures
-        console.error(`Error fetching model ${modelId} update:`, error);
 
-        // Optional: Could implement a retry counter and only show error after N failures
-        // handleApiError(error, `Atualização do modelo ${modelId}`);
+        // Reset retry count on success
+        delete retryCountRef.current[modelId];
+      } catch (error) {
+        // Increment retry count for this specific model
+        const currentRetries = retryCountRef.current[modelId] || 0;
+        retryCountRef.current[modelId] = currentRetries + 1;
+
+        setErrorCount(prev => prev + 1);
+
+        // Log error for debugging
+        console.error(
+          `Error fetching model ${modelId} update (attempt ${currentRetries + 1}):`,
+          error
+        );
+
+        // If max retries reached, remove from retry tracking
+        if (currentRetries >= maxRetries) {
+          delete retryCountRef.current[modelId];
+          console.warn(
+            `Max retries reached for model ${modelId}, stopping retries`
+          );
+        }
       }
     },
-    [onModelUpdate]
+    [onModelUpdate, maxRetries, setErrorCount]
   );
 
   /**
-   * Poll for updates on models with pending trainings
+   * Poll for updates on models with active trainings
    */
   const pollForUpdates = useCallback(async (): Promise<void> => {
     if (!enabled) return;
 
-    const modelIds = getModelsWithPendingTrainings();
+    const modelIds = getModelsWithActiveTrainings();
 
     if (modelIds.length === 0) {
-      // No models with pending trainings, stop polling
+      // No models with active trainings, stop polling
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
-        isPollingRef.current = false;
+        setIsPolling(false);
+        console.log('Training polling stopped - no active trainings');
       }
       return;
     }
 
-    // Fetch updates for all models with pending trainings
+    // Fetch updates for all models with active trainings
     const updatePromises = modelIds.map(fetchModelUpdate);
     await Promise.allSettled(updatePromises);
-  }, [enabled, getModelsWithPendingTrainings, fetchModelUpdate]);
+
+    // Check again after updates to see if any models finished training
+    const updatedModelIds = getModelsWithActiveTrainings();
+    if (updatedModelIds.length === 0 && intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+      setIsPolling(false);
+      console.log('Training polling stopped - all trainings completed');
+    }
+  }, [enabled, getModelsWithActiveTrainings, fetchModelUpdate]);
 
   /**
    * Start polling for training updates
@@ -98,7 +138,7 @@ export const useTrainingPolling = ({
 
     // Set up interval
     intervalRef.current = setInterval(pollForUpdates, pollingInterval);
-    isPollingRef.current = true;
+    setIsPolling(true);
 
     console.log('Training polling started');
   }, [enabled, pollingInterval, pollForUpdates]);
@@ -110,13 +150,13 @@ export const useTrainingPolling = ({
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
-      isPollingRef.current = false;
+      setIsPolling(false);
       console.log('Training polling stopped');
     }
   }, []);
 
   /**
-   * Auto-start/stop polling based on pending trainings
+   * Auto-start/stop polling based on active trainings
    */
   useEffect(() => {
     if (!enabled) {
@@ -124,20 +164,18 @@ export const useTrainingPolling = ({
       return;
     }
 
-    const modelsWithPendingTrainings = getModelsWithPendingTrainings();
+    const modelsWithActiveTrainings = getModelsWithActiveTrainings();
 
-    if (modelsWithPendingTrainings.length > 0 && !isPollingRef.current) {
+    if (modelsWithActiveTrainings.length > 0 && !isPolling) {
       startPolling();
-    } else if (
-      modelsWithPendingTrainings.length === 0 &&
-      isPollingRef.current
-    ) {
+    } else if (modelsWithActiveTrainings.length === 0 && isPolling) {
       stopPolling();
     }
   }, [
     models,
     enabled,
-    getModelsWithPendingTrainings,
+    isPolling,
+    getModelsWithActiveTrainings,
     startPolling,
     stopPolling,
   ]);
@@ -154,6 +192,7 @@ export const useTrainingPolling = ({
   return {
     startPolling,
     stopPolling,
-    isPolling: isPollingRef.current,
+    isPolling,
+    errorCount,
   };
 };
