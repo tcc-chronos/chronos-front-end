@@ -5,13 +5,12 @@ import {
   type NotificationContextType,
 } from '../contexts/NotificationContext';
 
-// Constants for better maintainability
-const DEFAULT_NOTIFICATION_DURATION = 5000; // 5 seconds
-const ANIMATION_DURATION = 300; // milliseconds
+const DEFAULT_NOTIFICATION_DURATION = 5000;
+const ANIMATION_DURATION = 300;
 
 interface NotificationProviderProps {
   children: React.ReactNode;
-  maxNotifications?: number; // Limit concurrent notifications
+  maxNotifications?: number;
 }
 
 export const NotificationProvider: React.FC<NotificationProviderProps> = ({
@@ -20,7 +19,6 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
 }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
-  // Memoized ID generator for better performance
   const generateId = useCallback(() => {
     return `notification-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
   }, []);
@@ -34,7 +32,6 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
       )
     );
 
-    // Remove completely after animation
     setTimeout(() => {
       setNotifications(prev => prev.filter(n => n.id !== id));
     }, ANIMATION_DURATION);
@@ -53,11 +50,9 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
         duration: notification.duration ?? DEFAULT_NOTIFICATION_DURATION,
       };
 
-      // Limit concurrent notifications
       setNotifications(prev => {
         const updated = [...prev, newNotification];
         if (updated.length > maxNotifications) {
-          // Remove oldest visible notifications
           const visibleNotifications = updated.filter(n => n.isVisible);
           const toRemove = visibleNotifications.slice(
             0,
@@ -69,7 +64,6 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
         return updated;
       });
 
-      // Auto-dismiss if duration > 0
       if (newNotification.duration && newNotification.duration > 0) {
         setTimeout(() => {
           removeNotification(id);
@@ -86,13 +80,11 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
       prev.map(notification => ({ ...notification, isVisible: false }))
     );
 
-    // Remove all after animation
     setTimeout(() => {
       setNotifications([]);
     }, ANIMATION_DURATION);
   }, []);
 
-  // Convenience methods
   const addError = useCallback(
     (title: string, message?: string, duration = 8000): string => {
       return addNotification({ type: 'error', title, message, duration });

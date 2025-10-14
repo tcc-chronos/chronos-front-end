@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { SidebarItem } from '../../molecules/SidebarItem';
-import { useSidebar } from '../../../hooks/useSidebarHook';
+import { useSidebar } from '../../../hooks/useSidebar';
 import type { SidebarProps } from './Sidebar.types';
 
 const Sidebar: React.FC<Partial<SidebarProps>> = ({

@@ -5,7 +5,7 @@ export interface Notification {
   type: 'error' | 'success' | 'warning' | 'info';
   title: string;
   message?: string;
-  duration?: number; // in milliseconds, 0 = no auto dismiss
+  duration?: number;
   isVisible: boolean;
   createdAt: Date;
 }
@@ -17,7 +17,6 @@ export interface NotificationContextType {
   ) => string;
   removeNotification: (id: string) => void;
   clearAll: () => void;
-  // Convenience methods
   addError: (title: string, message?: string, duration?: number) => string;
   addSuccess: (title: string, message?: string, duration?: number) => string;
   addWarning: (title: string, message?: string, duration?: number) => string;

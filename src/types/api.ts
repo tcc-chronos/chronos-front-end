@@ -1,8 +1,3 @@
-/**
- * Device and API-related types
- */
-
-// Device types
 export interface DeviceEntity {
   entity_name: string;
   attributes: string[];
@@ -17,7 +12,6 @@ export interface DevicesResponse {
   devices: DeviceType[];
 }
 
-// Model types
 export interface ModelType {
   value: string;
   label: string;

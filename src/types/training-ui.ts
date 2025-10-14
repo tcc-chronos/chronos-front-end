@@ -1,8 +1,3 @@
-/**
- * UI-specific types for training components
- */
-
-// Layer configuration for RNN training
 export interface Layer {
   id: string;
   neurons: number;
@@ -10,7 +5,6 @@ export interface Layer {
   type: 'RNN' | 'Dense';
 }
 
-// SortableList component props
 export interface SortableListProps {
   layersRNN: Layer[];
   layersDense: Layer[];

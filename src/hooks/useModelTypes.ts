@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { ModelsService, type ModelType } from '../services/models';
-import { useApiErrorHandler } from './useApiErrorHandler';
+import { useTrainingSidebarStore } from '../store/trainingSidebarStore';
 
 interface UseModelTypesReturn {
   modelTypes: ModelType[];
@@ -9,37 +9,57 @@ interface UseModelTypesReturn {
   fetchModelTypes: () => Promise<void>;
 }
 
-/**
- * Hook to fetch and manage model types from the API
- */
-export const useModelTypes = (): UseModelTypesReturn => {
-  const [modelTypes, setModelTypes] = useState<ModelType[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+interface UseModelTypesOptions {
+  autoFetch?: boolean;
+}
 
-  const { handleApiError } = useApiErrorHandler();
+export const useModelTypes = (
+  options: UseModelTypesOptions = {}
+): UseModelTypesReturn => {
+  const { autoFetch = false } = options;
 
-  const fetchModelTypes = useCallback(async () => {
+  const {
+    modelTypes,
+    modelTypesLoading: loading,
+    modelTypesError: error,
+    setModelTypes,
+    setModelTypesLoading,
+    setModelTypesError,
+    shouldFetchModelTypes,
+  } = useTrainingSidebarStore();
+
+  const fetchModelTypes = useCallback(async (): Promise<void> => {
+    if (!shouldFetchModelTypes()) {
+      return;
+    }
+
+    setModelTypesLoading(true);
+    setModelTypesError(null);
+
     try {
-      setLoading(true);
-      setError(null);
       const types = await ModelsService.getModelTypes();
       setModelTypes(types);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Erro ao carregar tipos de modelo';
-      setError(errorMessage);
-      handleApiError(err, 'Carregamento de tipos de modelo');
-      console.error('Error fetching model types:', err);
+      setModelTypesError(errorMessage);
+      console.warn('useModelTypes: Failed to fetch model types', err);
     } finally {
-      setLoading(false);
+      setModelTypesLoading(false);
     }
-  }, [handleApiError]);
+  }, [
+    shouldFetchModelTypes,
+    setModelTypes,
+    setModelTypesLoading,
+    setModelTypesError,
+  ]);
 
-  // Fetch model types on mount
   useEffect(() => {
-    fetchModelTypes();
-  }, [fetchModelTypes]);
+    if (autoFetch) {
+      fetchModelTypes();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoFetch]);
 
   return {
     modelTypes,

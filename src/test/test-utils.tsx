@@ -3,8 +3,8 @@ import { render } from '@testing-library/react';
 import type { ReactElement, ReactNode } from 'react';
 import type { RenderOptions } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
-import { NotificationProvider } from '../hooks/NotificationProvider';
-import { SidebarProvider } from '../hooks/SidebarProvider';
+import { NotificationProvider } from '../contexts/NotificationProvider';
+import { SidebarProvider } from '../contexts/SidebarProvider';
 
 const AllTheProviders = ({ children }: { children: ReactNode }) => {
   return (

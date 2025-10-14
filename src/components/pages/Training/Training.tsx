@@ -12,17 +12,7 @@ import { useModels } from '../../../hooks/useModels';
 
 const Training = () => {
   const { addItem, clearItems } = useSidebar();
-  const { models, isPolling } = useModels();
-
-  const activeTrainingsCount = models.reduce(
-    (count, model) =>
-      count +
-      model.trainings.filter(
-        training =>
-          training.status === 'pending' || training.status === 'running'
-      ).length,
-    0
-  );
+  const { isPolling } = useModels();
 
   useEffect(() => {
     clearItems();
@@ -63,11 +53,7 @@ const Training = () => {
           <h1 className='text-3xl font-bold text-gray-900'>Treinamento</h1>
           <PollingIndicator
             isActive={isPolling}
-            text={
-              activeTrainingsCount > 0
-                ? `Monitorando ${activeTrainingsCount} treinamento${activeTrainingsCount > 1 ? 's' : ''}`
-                : 'Verificando atualizações...'
-            }
+            text='Treinamento em andamento...'
             size='md'
             variant='primary'
           />

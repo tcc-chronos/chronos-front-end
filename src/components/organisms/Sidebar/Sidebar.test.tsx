@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Sidebar from './Sidebar';
-import { SidebarProvider } from '../../../hooks/SidebarProvider';
+import { SidebarProvider } from '../../../contexts/SidebarProvider';
 import type { SidebarItemProps } from '../../molecules/SidebarItem/SidebarItem.types';
 
 // Mock do hook useSidebar
@@ -15,7 +15,7 @@ const mockUseSidebar = {
   clearItems: vi.fn(),
 };
 
-vi.mock('../../../hooks/useSidebarHook', () => ({
+vi.mock('../../../hooks/useSidebar', () => ({
   useSidebar: () => mockUseSidebar,
   SidebarProvider: ({ children }: { children: React.ReactNode }) => (
     <div>{children}</div>

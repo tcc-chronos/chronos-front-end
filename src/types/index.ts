@@ -1,4 +1,3 @@
-// API types
 export type {
   DeviceEntity,
   DeviceType,
@@ -6,7 +5,6 @@ export type {
   ModelType,
 } from './api';
 
-// Training types
 export type {
   ApiTrainingMetrics,
   ApiRnnLayer,
@@ -20,8 +18,6 @@ export type {
   TrainingFormData,
 } from './training';
 
-// UI types
 export type { Layer, SortableListProps } from './training-ui';
 
-// Sidebar types
 export type { SidebarContextType } from './sidebar';

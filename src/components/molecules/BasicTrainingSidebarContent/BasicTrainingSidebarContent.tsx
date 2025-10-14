@@ -3,6 +3,7 @@ import { SidebarContent, SelectField, TrainingButton } from '../';
 import { useTrainingSidebarStore } from '../../../store/trainingSidebarStore';
 import { useDevices } from '../../../hooks/useDevices';
 import { useModelTypes } from '../../../hooks/useModelTypes';
+import { useSidebar } from '../../../hooks/useSidebar';
 import type { BasicTrainingSidebarContentProps } from './BasicTrainingSidebarContent.types';
 
 interface ValidationErrors {
@@ -20,13 +21,12 @@ const BasicTrainingSidebarContent: React.FC<
   const { rnn_type, entity_type, entity_id, feature, setField } =
     useTrainingSidebarStore();
   const [errors, setErrors] = useState<ValidationErrors>({});
+  const { activeItemId } = useSidebar();
 
-  // Use devices hook for real API data
   const {
     deviceTypes,
     deviceEntities,
     deviceAttributes,
-    isLoading,
     error: devicesError,
     setSelectedDeviceType,
     setSelectedEntityId,
@@ -34,27 +34,57 @@ const BasicTrainingSidebarContent: React.FC<
   } = useDevices({
     initialDeviceType: entity_type,
     initialEntityId: entity_id,
-    autoFetch: false, // Don't auto-fetch on mount
+    autoFetch: false,
   });
 
-  // Fetch devices only when user interacts with dropdowns or component becomes visible
-  const [hasInteracted, setHasInteracted] = useState(false);
-
-  useEffect(() => {
-    if (hasInteracted && deviceTypes.length === 0 && !isLoading) {
-      console.log(
-        'BasicTrainingSidebarContent: Fetching devices due to user interaction'
-      );
-      refetchDevices();
-    }
-  }, [hasInteracted, deviceTypes.length, isLoading, refetchDevices]);
-
-  // Use model types hook for dynamic RNN types
   const {
     modelTypes: rnnTypeOptions,
     loading: modelTypesLoading,
     error: modelTypesError,
-  } = useModelTypes();
+    fetchModelTypes,
+  } = useModelTypes({ autoFetch: false });
+
+  useEffect(() => {
+    if (activeItemId) {
+      refetchDevices();
+      fetchModelTypes();
+    }
+  }, [activeItemId, refetchDevices, fetchModelTypes]);
+
+  useEffect(() => {
+    if (entity_type) {
+      setSelectedDeviceType(entity_type);
+    }
+    if (entity_id) {
+      setSelectedEntityId(entity_id);
+    }
+  }, [entity_type, entity_id, setSelectedDeviceType, setSelectedEntityId]);
+
+  useEffect(() => {
+    const handleRefreshDevices = (
+      event: CustomEvent<{
+        entity_type: string;
+        entity_id: string;
+        feature: string;
+      }>
+    ) => {
+      refetchDevices().then(() => {
+        setSelectedDeviceType(event.detail.entity_type);
+        setSelectedEntityId(event.detail.entity_id);
+      });
+    };
+
+    window.addEventListener(
+      'refreshDevicesForCopiedParams',
+      handleRefreshDevices as EventListener
+    );
+    return () => {
+      window.removeEventListener(
+        'refreshDevicesForCopiedParams',
+        handleRefreshDevices as EventListener
+      );
+    };
+  }, [refetchDevices, setSelectedDeviceType, setSelectedEntityId]);
 
   const validateRnnType = (value: string | undefined) =>
     !value ? 'Tipo de RNN obrigatório' : undefined;
@@ -70,17 +100,11 @@ const BasicTrainingSidebarContent: React.FC<
     setErrors(prev => ({ ...prev, rnn_type: validateRnnType(String(value)) }));
   };
   const handleEntityTypeChange = (value: string | number) => {
-    // Mark that user has interacted with devices dropdown
-    if (!hasInteracted) {
-      setHasInteracted(true);
-    }
-
     const stringValue = String(value);
     setField('entity_type', stringValue);
     setField('entity_id', undefined);
     setField('feature', undefined);
 
-    // Update devices hook state
     setSelectedDeviceType(stringValue);
     setSelectedEntityId(undefined);
 
@@ -97,7 +121,6 @@ const BasicTrainingSidebarContent: React.FC<
     setField('entity_id', stringValue);
     setField('feature', undefined);
 
-    // Update devices hook state
     setSelectedEntityId(stringValue);
 
     setErrors(prev => ({
@@ -113,23 +136,6 @@ const BasicTrainingSidebarContent: React.FC<
       feature: validateFeature(String(value)),
     }));
   };
-
-  // Show error message if devices failed to load
-  if (devicesError) {
-    return (
-      <SidebarContent
-        title='Configuração de Modelo'
-        variant='default'
-        className={className}
-        {...props}
-      >
-        <div className='p-4 text-red-600 bg-red-50 rounded-md'>
-          <p className='font-medium'>Erro ao carregar dispositivos:</p>
-          <p className='text-sm mt-1'>{devicesError}</p>
-        </div>
-      </SidebarContent>
-    );
-  }
 
   return (
     <SidebarContent
@@ -150,6 +156,7 @@ const BasicTrainingSidebarContent: React.FC<
           infoTooltip='Tipo de rede neural recorrente.'
           required
           loading={modelTypesLoading}
+          disabled={!!modelTypesError}
         />
 
         <SelectField
@@ -157,17 +164,13 @@ const BasicTrainingSidebarContent: React.FC<
           label='Tipo de dispositivo:'
           value={entity_type}
           onChange={handleEntityTypeChange}
-          onFocus={() => {
-            if (!hasInteracted) {
-              setHasInteracted(true);
-            }
-          }}
           options={deviceTypes}
           placeholder='Selecione o tipo de dispositivo'
           error={errors.entity_type}
           infoTooltip='Tipo de entidade/dispositivo.'
           required
-          loading={isLoading}
+          loading={false}
+          disabled={!!devicesError}
         />
 
         <SelectField
@@ -180,8 +183,8 @@ const BasicTrainingSidebarContent: React.FC<
           error={errors.entity_id}
           infoTooltip='Identificador do dispositivo.'
           required
-          loading={isLoading || deviceEntities.length === 0}
-          disabled={!entity_type}
+          loading={false}
+          disabled={!entity_type || !!devicesError}
         />
 
         <SelectField
@@ -194,8 +197,8 @@ const BasicTrainingSidebarContent: React.FC<
           error={errors.feature}
           infoTooltip='Atributo/feature do dispositivo.'
           required
-          loading={isLoading || deviceAttributes.length === 0}
-          disabled={!entity_id}
+          loading={false}
+          disabled={!entity_id || !!devicesError}
         />
 
         <div className='fixed bottom-0 bg-white pb-2 border-gray-200 w-70'>

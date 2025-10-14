@@ -5,29 +5,19 @@ import type {
   TrainingMetrics,
 } from '../types/training';
 
-/**
- * Utility functions to adapt API models to legacy format
- */
 export class ModelsAdapter {
-  /**
-   * Convert API model to legacy model format
-   */
   static apiModelToLegacy(apiModel: ApiModel): Model {
     return {
       id: apiModel.id,
       name: apiModel.name,
       rnnType: apiModel.model_type.toUpperCase(),
       createdAt: apiModel.created_at,
-      device: apiModel.entity_id, // Default value as API doesn't provide this
+      device: apiModel.entity_id,
       attribute: apiModel.feature,
       status: apiModel.status,
       trainings: apiModel.trainings.map(ModelsAdapter.apiTrainingToLegacy),
     };
   }
-
-  /**
-   * Convert API training to legacy training format
-   */
   static apiTrainingToLegacy(
     apiTraining: ApiModel['trainings'][number]
   ): ModelTraining {
@@ -47,9 +37,6 @@ export class ModelsAdapter {
     };
   }
 
-  /**
-   * Convert API metrics to legacy metrics format
-   */
   static apiMetricsToLegacy(
     apiMetrics: ApiModel['trainings'][number]['metrics']
   ): TrainingMetrics {

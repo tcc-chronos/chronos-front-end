@@ -1,7 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { useNotifications } from './useNotifications';
 
-// Constants for better maintainability
 const ERROR_MESSAGES = {
   400: 'Dados inválidos enviados para o servidor',
   401: 'Acesso não autorizado',
@@ -17,14 +16,9 @@ const NOTIFICATION_DURATIONS = {
   SUCCESS: 4000,
 } as const;
 
-/**
- * Hook para capturar e exibir erros de API automaticamente
- * Aplica padrões de tratamento de erro consistentes em toda a aplicação
- */
 export const useApiErrorHandler = () => {
   const { addError, addSuccess } = useNotifications();
 
-  // Memoize error message mapping for performance
   const getErrorMessage = useMemo(() => {
     return (error: unknown): string => {
       let errorMessage: string = ERROR_MESSAGES.DEFAULT;
@@ -35,7 +29,6 @@ export const useApiErrorHandler = () => {
         errorMessage = error;
       }
 
-      // Map HTTP errors to user-friendly messages
       if (errorMessage.includes('HTTP error! status: 400')) {
         return ERROR_MESSAGES[400];
       } else if (errorMessage.includes('HTTP error! status: 401')) {

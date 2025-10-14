@@ -3,8 +3,7 @@ import { ModelsService } from '../services/models';
 import { ModelsAdapter } from '../utils/modelsAdapter';
 import type { Model } from '../types/training';
 
-// Constants for better maintainability
-const DEFAULT_POLLING_INTERVAL = 5000; // 5 seconds
+const DEFAULT_POLLING_INTERVAL = 10000;
 const MAX_RETRY_ATTEMPTS = 3;
 
 interface UseTrainingPollingOptions {
@@ -22,11 +21,17 @@ interface UseTrainingPollingReturn {
   errorCount: number;
 }
 
-/**
- * Hook to manage polling for training updates
- * Monitors models with pending/running trainings and updates them periodically
- * Includes error handling and automatic retry logic
- */
+let sharedIntervalId: number | null = null;
+let sharedIsPolling = false;
+const pollingListeners = new Set<(isPolling: boolean) => void>();
+
+const setSharedIsPolling = (value: boolean) => {
+  if (sharedIsPolling !== value) {
+    sharedIsPolling = value;
+    pollingListeners.forEach(listener => listener(sharedIsPolling));
+  }
+};
+
 export const useTrainingPolling = ({
   models,
   onModelUpdate,
@@ -34,32 +39,24 @@ export const useTrainingPolling = ({
   enabled = true,
   maxRetries = MAX_RETRY_ATTEMPTS,
 }: UseTrainingPollingOptions): UseTrainingPollingReturn => {
-  const intervalRef = useRef<number | null>(null);
-  const [isPolling, setIsPolling] = useState(false);
+  const [isPolling, setIsPolling] = useState(sharedIsPolling);
   const [errorCount, setErrorCount] = useState(0);
   const retryCountRef = useRef<Record<string, number>>({});
 
-  /**
-   * Get models that have active trainings that need polling
-   * Considers both model status and individual training status
-   * Stops polling when:
-   * - Model status is not 'training' AND
-   * - All trainings are in final state ('completed' or 'failed')
-   */
-  const getModelsWithActiveTrainings = useCallback((): string[] => {
-    return models
-      .filter(model => {
-        // If model is actively training, keep polling
-        if (model.status === 'training') {
-          return true;
-        }
-      })
-      .map(model => model.id);
+  useEffect(() => {
+    const listener = (polling: boolean) => {
+      setIsPolling(polling);
+    };
+    pollingListeners.add(listener);
+    return () => {
+      pollingListeners.delete(listener);
+    };
+  }, []);
+
+  const getModelsWithActiveTrainings = useCallback((): Model[] => {
+    return models.filter(model => model.status === 'training');
   }, [models]);
 
-  /**
-   * Fetch updated model data from API with retry logic
-   */
   const fetchModelUpdate = useCallback(
     async (modelId: string): Promise<void> => {
       try {
@@ -67,22 +64,18 @@ export const useTrainingPolling = ({
         const legacyModel = ModelsAdapter.apiModelToLegacy(apiModel);
         onModelUpdate(legacyModel);
 
-        // Reset retry count on success
         delete retryCountRef.current[modelId];
       } catch (error) {
-        // Increment retry count for this specific model
         const currentRetries = retryCountRef.current[modelId] || 0;
         retryCountRef.current[modelId] = currentRetries + 1;
 
         setErrorCount(prev => prev + 1);
 
-        // Log error for debugging
         console.error(
           `Error fetching model ${modelId} update (attempt ${currentRetries + 1}):`,
           error
         );
 
-        // If max retries reached, remove from retry tracking
         if (currentRetries >= maxRetries) {
           delete retryCountRef.current[modelId];
           console.warn(
@@ -94,70 +87,50 @@ export const useTrainingPolling = ({
     [onModelUpdate, maxRetries, setErrorCount]
   );
 
-  /**
-   * Poll for updates on models with active trainings
-   */
   const pollForUpdates = useCallback(async (): Promise<void> => {
-    if (!enabled) return;
+    if (!enabled) {
+      return;
+    }
 
     const modelIds = getModelsWithActiveTrainings();
 
     if (modelIds.length === 0) {
-      // No models with active trainings, stop polling
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-        setIsPolling(false);
-        console.log('Training polling stopped - no active trainings');
+      if (sharedIntervalId) {
+        clearInterval(sharedIntervalId);
+        sharedIntervalId = null;
+        setSharedIsPolling(false);
       }
       return;
     }
 
-    // Fetch updates for all models with active trainings
-    const updatePromises = modelIds.map(fetchModelUpdate);
+    const updatePromises = modelIds.map(model => fetchModelUpdate(model.id));
     await Promise.allSettled(updatePromises);
 
-    // Check again after updates to see if any models finished training
     const updatedModelIds = getModelsWithActiveTrainings();
-    if (updatedModelIds.length === 0 && intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-      setIsPolling(false);
-      console.log('Training polling stopped - all trainings completed');
+    if (updatedModelIds.length === 0 && sharedIntervalId) {
+      clearInterval(sharedIntervalId);
+      sharedIntervalId = null;
+      setSharedIsPolling(false);
     }
   }, [enabled, getModelsWithActiveTrainings, fetchModelUpdate]);
 
-  /**
-   * Start polling for training updates
-   */
   const startPolling = useCallback((): void => {
-    if (intervalRef.current || !enabled) return;
+    if (sharedIntervalId || !enabled) return;
 
-    // Initial poll
     pollForUpdates();
 
-    // Set up interval
-    intervalRef.current = setInterval(pollForUpdates, pollingInterval);
-    setIsPolling(true);
-
-    console.log('Training polling started');
+    sharedIntervalId = setInterval(pollForUpdates, pollingInterval);
+    setSharedIsPolling(true);
   }, [enabled, pollingInterval, pollForUpdates]);
 
-  /**
-   * Stop polling for training updates
-   */
   const stopPolling = useCallback((): void => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-      setIsPolling(false);
-      console.log('Training polling stopped');
+    if (sharedIntervalId) {
+      clearInterval(sharedIntervalId);
+      sharedIntervalId = null;
+      setSharedIsPolling(false);
     }
   }, []);
 
-  /**
-   * Auto-start/stop polling based on active trainings
-   */
   useEffect(() => {
     if (!enabled) {
       stopPolling();
@@ -166,8 +139,13 @@ export const useTrainingPolling = ({
 
     const modelsWithActiveTrainings = getModelsWithActiveTrainings();
 
-    if (modelsWithActiveTrainings.length > 0 && !isPolling) {
-      startPolling();
+    if (modelsWithActiveTrainings.length > 0) {
+      if (isPolling) {
+        stopPolling();
+        setTimeout(() => startPolling(), 100);
+      } else {
+        startPolling();
+      }
     } else if (modelsWithActiveTrainings.length === 0 && isPolling) {
       stopPolling();
     }
@@ -180,9 +158,6 @@ export const useTrainingPolling = ({
     stopPolling,
   ]);
 
-  /**
-   * Cleanup on unmount
-   */
   useEffect(() => {
     return () => {
       stopPolling();

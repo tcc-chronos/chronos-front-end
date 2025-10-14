@@ -37,14 +37,12 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
       }
     };
 
-    // Size classes
     const sizeClasses = {
       sm: 'px-3 py-1.5 text-sm',
       md: 'px-4 py-2 text-base',
       lg: 'px-5 py-3 text-lg',
     };
 
-    // Base classes para o select customizado
     const baseClasses = [
       'w-full',
       'bg-gray-50',
@@ -82,7 +80,6 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
       ' '
     );
 
-    // Label classes
     const labelClasses = [
       'block',
       'text-sm',
@@ -91,7 +88,6 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
       'mb-1',
     ].join(' ');
 
-    // Generate unique ID if not provided
     const inputId = id || `select-${Math.random().toString(36).substr(2, 9)}`;
 
     const renderLabel = () => {
@@ -128,19 +124,16 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
         className={selectClasses}
         {...props}
       >
-        {/* Default placeholder option */}
         <option value='' disabled>
           {loading ? 'Carregando...' : placeholder}
         </option>
 
-        {/* Show empty message when no options */}
         {options.length === 0 && !loading && (
           <option value='' disabled>
             {emptyMessage}
           </option>
         )}
 
-        {/* Render actual options */}
         {options.map(option => (
           <option
             key={String(option.value)}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AlertCircle, Loader2, RefreshCw } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { ModelCard } from '../../molecules';
 import {
   ConfirmDeleteModal,
@@ -13,12 +13,10 @@ const ModelsList: React.FC<ModelsListProps> = ({ className = '' }) => {
   const {
     models,
     loading,
-    error,
     deleteModel,
     createTraining,
     deleteTraining,
     copyModelParams,
-    isPolling,
   } = useModels();
 
   const [expandedModels, setExpandedModels] = useState<Set<string>>(new Set());
@@ -176,18 +174,6 @@ const ModelsList: React.FC<ModelsListProps> = ({ className = '' }) => {
     );
   }
 
-  // Error state
-  if (error) {
-    return (
-      <div className={`flex items-center justify-center py-12 ${className}`}>
-        <div className='flex items-center space-x-2 text-red-500'>
-          <AlertCircle size={20} />
-          <span>Erro ao carregar modelos: {error}</span>
-        </div>
-      </div>
-    );
-  }
-
   // Empty state
   if (models.length === 0) {
     return (
@@ -202,17 +188,6 @@ const ModelsList: React.FC<ModelsListProps> = ({ className = '' }) => {
 
   return (
     <div className={`space-y-4 ${className}`}>
-      {/* Polling Status Indicator */}
-      {isPolling && (
-        <div className='flex items-center justify-center py-2 px-4 bg-blue-50 border border-blue-200 rounded-lg'>
-          <RefreshCw className='h-4 w-4 text-blue-600 animate-spin mr-2' />
-          <span className='text-sm text-blue-800'>
-            Monitorando treinamentos em andamento...
-          </span>
-        </div>
-      )}
-
-      {/* Models List */}
       {models.map(model => (
         <ModelCard
           key={model.id}
@@ -228,7 +203,6 @@ const ModelsList: React.FC<ModelsListProps> = ({ className = '' }) => {
         />
       ))}
 
-      {/* Delete Confirmation Modal */}
       <ConfirmDeleteModal
         isOpen={deleteModalState.isOpen}
         onClose={() =>
@@ -258,7 +232,6 @@ const ModelsList: React.FC<ModelsListProps> = ({ className = '' }) => {
         }
       />
 
-      {/* New Training Modal */}
       <NewTrainingModal
         isOpen={trainingModalState.isOpen}
         onClose={() =>

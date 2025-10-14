@@ -1,4 +1,3 @@
-// API Response Types (matching backend response)
 export interface ApiTrainingMetrics {
   mse: number;
   mae: number;
@@ -63,7 +62,6 @@ export interface ApiModel {
   trainings: ApiTraining[];
 }
 
-// Legacy types for backward compatibility
 export interface TrainingMetrics {
   mae: number;
   mse: number;
@@ -95,7 +93,6 @@ export interface CreateTrainingRequest {
   dataVolume: number;
 }
 
-// Unified interface for training form data (consolidates CreateTrainingData and TrainingFormData)
 export interface TrainingFormData {
   dataVolume: number;
 }

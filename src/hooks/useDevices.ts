@@ -1,9 +1,8 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { DevicesService } from '../services/models';
 import type { DeviceType } from '../types/api';
-import { useApiErrorHandler } from './useApiErrorHandler';
+import { useTrainingSidebarStore } from '../store/trainingSidebarStore';
 
-// Types for better type safety
 export interface DropdownOption {
   value: string;
   label: string;
@@ -12,51 +11,38 @@ export interface DropdownOption {
 export interface UseDevicesOptions {
   initialDeviceType?: string;
   initialEntityId?: string;
-  autoFetch?: boolean; // Allow disabling auto-fetch - defaults to false
+  autoFetch?: boolean;
 }
 
 export interface UseDevicesReturn {
-  // Dropdown options
   deviceTypes: DropdownOption[];
   deviceEntities: DropdownOption[];
   deviceAttributes: DropdownOption[];
-
-  // Selection states
   selectedDeviceType: string | undefined;
   selectedEntityId: string | undefined;
-
-  // Selection handlers
   setSelectedDeviceType: (type: string | undefined) => void;
   setSelectedEntityId: (entityId: string | undefined) => void;
-
-  // Loading and error states
   isLoading: boolean;
   error: string | null;
-
-  // Actions
   refetch: () => Promise<void>;
-
-  // Raw data for advanced use cases
   rawDevices: DeviceType[];
 }
 
-/**
- * Custom hook for managing device data and dropdown states
- * Provides reactive device selection with memoized dropdown options
- */
 export const useDevices = (
   options: UseDevicesOptions = {}
 ): UseDevicesReturn => {
   const { initialDeviceType, initialEntityId, autoFetch = false } = options;
 
-  // State management
-  const [rawDevices, setRawDevices] = useState<DeviceType[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    devices: rawDevices,
+    devicesLoading: isLoading,
+    devicesError: error,
+    setDevices,
+    setDevicesLoading,
+    setDevicesError,
+    shouldFetchDevices,
+  } = useTrainingSidebarStore();
 
-  const { handleApiError } = useApiErrorHandler();
-
-  // Selection states with proper initialization
   const [selectedDeviceType, setSelectedDeviceType] = useState<
     string | undefined
   >(initialDeviceType);
@@ -64,37 +50,34 @@ export const useDevices = (
     initialEntityId
   );
 
-  // Fetch devices from API with proper error handling
   const fetchDevices = useCallback(async (): Promise<void> => {
-    if (isLoading) return; // Prevent concurrent requests
+    if (!shouldFetchDevices()) {
+      return;
+    }
 
-    setIsLoading(true);
-    setError(null);
+    setDevicesLoading(true);
+    setDevicesError(null);
 
     try {
       const response = await DevicesService.getDevices();
-      setRawDevices(response.devices || []);
+      setDevices(response.devices || []);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Failed to fetch devices';
-      setError(errorMessage);
-      handleApiError(err, 'Carregamento de dispositivos');
+      setDevicesError(errorMessage);
+      console.warn('useDevices: Failed to fetch devices', err);
     } finally {
-      setIsLoading(false);
+      setDevicesLoading(false);
     }
-  }, [handleApiError, isLoading]);
+  }, [shouldFetchDevices, setDevices, setDevicesLoading, setDevicesError]);
 
-  // Auto-fetch on mount if enabled
   useEffect(() => {
     if (autoFetch) {
-      console.log('useDevices: Auto-fetching devices');
       fetchDevices();
-    } else {
-      console.log('useDevices: Auto-fetch disabled');
     }
-  }, [autoFetch, fetchDevices]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoFetch]);
 
-  // Memoized device types dropdown options
   const deviceTypes = useMemo((): DropdownOption[] => {
     return rawDevices.map(device => ({
       value: device.entity_type,
@@ -102,7 +85,6 @@ export const useDevices = (
     }));
   }, [rawDevices]);
 
-  // Memoized device entities dropdown options based on selected device type
   const deviceEntities = useMemo((): DropdownOption[] => {
     if (!selectedDeviceType) {
       return [];
@@ -121,7 +103,6 @@ export const useDevices = (
     }));
   }, [rawDevices, selectedDeviceType]);
 
-  // Memoized device attributes dropdown options based on selected entity
   const deviceAttributes = useMemo((): DropdownOption[] => {
     if (!selectedDeviceType || !selectedEntityId) {
       return [];
@@ -147,10 +128,8 @@ export const useDevices = (
     }));
   }, [rawDevices, selectedDeviceType, selectedEntityId]);
 
-  // Reset dependent selections when parent changes
   useEffect(() => {
     if (selectedDeviceType) {
-      // Reset entity selection when device type changes
       const selectedDevice = rawDevices.find(
         device => device.entity_type === selectedDeviceType
       );

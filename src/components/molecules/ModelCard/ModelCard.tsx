@@ -35,7 +35,6 @@ const ModelCard: React.FC<ModelCardProps> = ({
 
   return (
     <div className='bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow'>
-      {/* Card Header */}
       <div className='p-6'>
         <div className='flex items-start justify-between sm:items-center flex-col sm:flex-row gap-4'>
           <div className='flex-1 w-full'>
@@ -85,7 +84,6 @@ const ModelCard: React.FC<ModelCardProps> = ({
             </div>
           </div>
 
-          {/* Action Buttons */}
           <div className='flex items-center ml-0 sm:ml-6 lg:ml-6 flex-row sm:flex-col lg:flex-row space-x-2 sm:space-x-0 lg:space-x-2 space-y-0 sm:space-y-2 lg:space-y-0 w-full sm:w-auto lg:w-auto'>
             <IconButton
               icon={<Copy size={16} />}
@@ -126,7 +124,6 @@ const ModelCard: React.FC<ModelCardProps> = ({
         </div>
       </div>
 
-      {/* Trainings List */}
       {isExpanded && (
         <div className='border-t border-gray-200 p-6 pt-4'>
           <h4 className='text-sm font-medium text-gray-900 mb-4'>
