@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import DashboardPage from './DashboardPage';
-import { SidebarProvider } from '../../../hooks/SidebarProvider';
+import { SidebarProvider } from '../../../contexts/SidebarProvider';
 
 const DashboardPageWithProvider = () => (
   <SidebarProvider>

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { BarChart3 } from 'lucide-react';
-import { useSidebar } from '../../../hooks/useSidebarHook';
+import { useSidebar } from '../../../hooks/useSidebar';
 import { AnalyticsSidebarContent } from '../../molecules';
 
 const DashboardPage: React.FC = () => {

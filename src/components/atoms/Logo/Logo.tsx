@@ -1,19 +1,12 @@
 import React from 'react';
 import type { LogoProps } from './Logo.types';
 
-/**
- * Componente Logo do Chronos
- *
- * Átomo que exibe o logo da aplicação com diferentes tamanhos
- * e opção de mostrar o texto
- */
 const Logo: React.FC<LogoProps> = ({
   size = 'sm',
   showText = true,
   className = '',
   ...props
 }) => {
-  // Definindo os tamanhos do logo
   const sizeClasses = {
     sm: 'h-6 w-6',
     md: 'h-8 w-8',

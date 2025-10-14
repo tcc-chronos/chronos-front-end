@@ -26,12 +26,10 @@ const Header: React.FC<HeaderProps> = ({
     >
       <div className='mx-auto px-4'>
         <div className='flex justify-between items-center h-16'>
-          {/* Logo e título */}
           <div className='flex items-center mr-4'>
             <Logo size={logoSize} showText={true} />
           </div>
 
-          {/* Navegação */}
           <div className='block'>
             <Navigation
               items={navigationItems}
