@@ -12,3 +12,6 @@ export { default as ModelCard } from './ModelCard';
 export { default as TrainingCard } from './TrainingCard';
 export { ConfirmDeleteModal, NewTrainingModal } from './ModalsContainer';
 export { TrainingButton } from './TrainingButton';
+export { DocumentationNav } from './DocumentationNav';
+export { DocumentationSection } from './DocumentationSection';
+export { DocumentationSidebarContent } from './DocumentationSidebarContent';

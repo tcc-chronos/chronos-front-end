@@ -18,7 +18,7 @@ const DefaultLayout = () => {
         <div className='flex flex-1 min-h-0 overflow-hidden'>
           <Sidebar />
 
-          <main className='flex-1 mx-auto py-6 sm:px-6 lg:px-8 overflow-y-auto'>
+          <main className='flex-1 mx-auto py-6 sm:px-6 lg:px-8 overflow-y-auto scroll-smooth'>
             <div className='px-4 py-6 sm:px-0'>
               <Outlet />
             </div>

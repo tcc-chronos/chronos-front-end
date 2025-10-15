@@ -9,3 +9,4 @@ export { default as Button } from './Button';
 export { default as Modal } from './Modal';
 export { PollingIndicator } from './PollingIndicator';
 export { default as Toast } from './Toast';
+export { DocumentationLink } from './DocumentationLink';

@@ -21,3 +21,5 @@ export type {
 export type { Layer, SortableListProps } from './training-ui';
 
 export type { SidebarContextType } from './sidebar';
+
+export type { DocumentationSection, DocumentationData } from './documentation';
