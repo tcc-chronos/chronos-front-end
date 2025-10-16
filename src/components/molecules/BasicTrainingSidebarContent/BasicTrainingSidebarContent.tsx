@@ -201,7 +201,7 @@ const BasicTrainingSidebarContent: React.FC<
           disabled={!entity_id || !!devicesError}
         />
 
-        <div className='fixed bottom-0 bg-white pb-2 border-gray-200 w-70'>
+        <div className='fixed bottom-0 bg-white border-t border-gray-200 w-70 py-4'>
           <TrainingButton variant='primary' fullWidth />
         </div>
       </div>

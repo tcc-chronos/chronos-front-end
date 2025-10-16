@@ -5,12 +5,18 @@ import type { RenderOptions } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { NotificationProvider } from '../contexts/NotificationProvider';
 import { SidebarProvider } from '../contexts/SidebarProvider';
+import { PredictionProvider } from '../contexts/PredictionProvider';
+import { PredictionPollingProvider } from '../contexts/PredictionPollingProvider';
 
 const AllTheProviders = ({ children }: { children: ReactNode }) => {
   return (
     <BrowserRouter>
       <NotificationProvider>
-        <SidebarProvider>{children}</SidebarProvider>
+        <SidebarProvider>
+          <PredictionProvider>
+            <PredictionPollingProvider>{children}</PredictionPollingProvider>
+          </PredictionProvider>
+        </SidebarProvider>
       </NotificationProvider>
     </BrowserRouter>
   );
