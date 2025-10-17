@@ -106,8 +106,7 @@ const Dashboard = () => {
       );
 
       setChartData(combinedData);
-    } catch (error) {
-      console.error('Erro no treinamento ou previsão:', error);
+    } catch {
       setChartData([]);
     } finally {
       setLoading(false);

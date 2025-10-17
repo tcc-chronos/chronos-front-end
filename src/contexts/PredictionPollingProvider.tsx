@@ -42,23 +42,11 @@ export const PredictionPollingProvider: React.FC<
   const startPolling = useCallback(
     async (modelId: string, trainingId: string) => {
       if (!modelId || !trainingId) {
-        console.warn(
-          '⚠️ [PredictionPollingProvider] startPolling: modelId ou trainingId ausente'
-        );
         return;
       }
 
-      console.log('🚀 [PredictionPollingProvider] startPolling iniciado:', {
-        modelId,
-        trainingId,
-        currentState: isPolling,
-      });
-
       // Parar polling anterior se existir
       if (pollingIntervalRef.current) {
-        console.log(
-          '🔄 [PredictionPollingProvider] Limpando polling anterior...'
-        );
         clearInterval(pollingIntervalRef.current);
         pollingIntervalRef.current = null;
       }
@@ -69,20 +57,8 @@ export const PredictionPollingProvider: React.FC<
 
       // Executar a primeira predição imediatamente
       try {
-        console.log(
-          `🚀 [Polling] Iniciando polling - Primeira predição às ${new Date().toLocaleTimeString(
-            'pt-BR',
-            {
-              timeZone: 'America/Sao_Paulo',
-            }
-          )}`
-        );
         await submitPrediction(modelId, trainingId, true); // Suprimir notificação
-        console.log(
-          `✅ [Polling] Primeira predição concluída - Gráfico inicializado`
-        );
-      } catch (error) {
-        console.error('❌ [Polling] Erro na predição inicial:', error);
+      } catch {
         return; // Sair se houver erro na primeira predição
       }
 
@@ -91,67 +67,36 @@ export const PredictionPollingProvider: React.FC<
         const selection = currentSelectionRef.current;
         if (selection?.modelId && selection?.trainingId) {
           try {
-            console.log(
-              `🔄 [Polling] Executando predição às ${new Date().toLocaleTimeString(
-                'pt-BR',
-                {
-                  timeZone: 'America/Sao_Paulo',
-                }
-              )}...`
-            );
             await submitPrediction(
               selection.modelId,
               selection.trainingId,
               true
             ); // Suprimir notificação
-            console.log(
-              `✅ [Polling] Predição concluída - Gráfico atualizado às ${new Date().toLocaleTimeString(
-                'pt-BR',
-                {
-                  timeZone: 'America/Sao_Paulo',
-                }
-              )}`
-            );
-          } catch (error) {
-            console.error('❌ [Polling] Erro no polling de predição:', error);
+          } catch {
+            // Error handled by hook
           }
         } else {
           // Se não há seleção válida, parar o polling
-          console.warn('⚠️ [Polling] Seleção inválida, parando polling');
           clearInterval(pollingIntervalRef.current!);
           pollingIntervalRef.current = null;
           setIsPolling(false);
         }
       }, 10000); // 10 segundos
     },
-    [submitPrediction, isPolling]
+    [submitPrediction]
   );
 
   const togglePolling = useCallback(
     (modelId: string, trainingId: string) => {
-      console.log('🔄 [PredictionPollingProvider] togglePolling chamado:', {
-        modelId,
-        trainingId,
-        isCurrentlyPolling: isPolling,
-        isExplicitlyStopped,
-        currentSelection: currentSelectionRef.current,
-      });
-
       if (isPolling) {
-        console.log(
-          '⏹️ [PredictionPollingProvider] Parando polling explicitamente...'
-        );
         setIsExplicitlyStopped(true);
         stopPolling();
       } else {
-        console.log(
-          '▶️ [PredictionPollingProvider] Iniciando polling e removendo flag de parada...'
-        );
         setIsExplicitlyStopped(false);
         startPolling(modelId, trainingId);
       }
     },
-    [isPolling, isExplicitlyStopped, startPolling, stopPolling]
+    [isPolling, startPolling, stopPolling]
   );
 
   // Limpar polling ao desmontar o componente
@@ -168,9 +113,6 @@ export const PredictionPollingProvider: React.FC<
     const isDashboardActive = isPageActive('/dashboard');
 
     if (!isDashboardActive && isPolling) {
-      console.log(
-        '🔄 [PredictionPolling] Pausando polling - usuário saiu do Dashboard'
-      );
       stopPolling();
     } else if (
       isDashboardActive &&
@@ -178,16 +120,9 @@ export const PredictionPollingProvider: React.FC<
       !isPolling &&
       !isExplicitlyStopped // Não retomar se foi explicitamente parado
     ) {
-      console.log(
-        '🔄 [PredictionPolling] Retomando polling - usuário voltou ao Dashboard'
-      );
-
       // Aguardar um pouco para garantir que a página carregou completamente
       const timeoutId = setTimeout(() => {
         const { modelId, trainingId } = currentSelectionRef.current!;
-        console.log(
-          '📊 [PredictionPolling] Iniciando nova predição após retorno ao Dashboard'
-        );
         startPolling(modelId, trainingId);
       }, 500); // 500ms de delay
 

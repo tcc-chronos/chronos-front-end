@@ -27,11 +27,6 @@ const DashboardPage: React.FC = () => {
     }
 
     const converted = convertPredictionToChartData(predictionData);
-    console.log('📊 [DashboardPage] Dados convertidos para gráfico:', {
-      chartDataLength: converted.length,
-      firstPoint: converted[0],
-      lastPoint: converted[converted.length - 1],
-    });
 
     return converted;
   }, [predictionData]);

@@ -34,9 +34,8 @@ export const PredictButton: React.FC<PredictButtonProps> = ({
     try {
       await submitPrediction(modelId, trainingId);
       onSuccess?.();
-    } catch (error) {
+    } catch {
       // Error handling is done in the hook
-      console.error('Prediction failed:', error);
     }
   };
 

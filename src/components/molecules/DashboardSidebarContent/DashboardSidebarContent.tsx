@@ -106,11 +106,8 @@ const DashboardSidebarContent: React.FC<DashboardSidebarContentProps> = ({
                   EXPANDED_MODELS_STORAGE_KEY,
                   JSON.stringify(Array.from(newSet))
                 );
-              } catch (error) {
-                console.warn(
-                  'Falha ao salvar modelos expandidos no localStorage:',
-                  error
-                );
+              } catch {
+                // Failed to save to localStorage
               }
             }
 
@@ -140,11 +137,8 @@ const DashboardSidebarContent: React.FC<DashboardSidebarContentProps> = ({
             EXPANDED_MODELS_STORAGE_KEY,
             JSON.stringify(Array.from(newSet))
           );
-        } catch (error) {
-          console.warn(
-            'Falha ao salvar modelos expandidos no localStorage:',
-            error
-          );
+        } catch {
+          // Failed to save to localStorage
         }
       }
 
@@ -170,11 +164,8 @@ const DashboardSidebarContent: React.FC<DashboardSidebarContentProps> = ({
           } else {
             localStorage.removeItem(SELECTED_TRAINING_STORAGE_KEY);
           }
-        } catch (error) {
-          console.warn(
-            'Falha ao salvar treinamento selecionado no localStorage:',
-            error
-          );
+        } catch {
+          // Failed to save to localStorage
         }
       }
 

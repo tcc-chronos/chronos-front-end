@@ -146,8 +146,7 @@ const LineChart: React.FC<LineChartProps> = ({
 
     try {
       return formatDateTime(label);
-    } catch (error) {
-      console.error('❌ [Tooltip] Erro ao formatar data:', error, label);
+    } catch {
       return label; // Retorna o valor original se houver erro
     }
   }, []);
