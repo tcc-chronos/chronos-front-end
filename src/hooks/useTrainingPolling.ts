@@ -65,22 +65,14 @@ export const useTrainingPolling = ({
         onModelUpdate(legacyModel);
 
         delete retryCountRef.current[modelId];
-      } catch (error) {
+      } catch {
         const currentRetries = retryCountRef.current[modelId] || 0;
         retryCountRef.current[modelId] = currentRetries + 1;
 
         setErrorCount(prev => prev + 1);
 
-        console.error(
-          `Error fetching model ${modelId} update (attempt ${currentRetries + 1}):`,
-          error
-        );
-
         if (currentRetries >= maxRetries) {
           delete retryCountRef.current[modelId];
-          console.warn(
-            `Max retries reached for model ${modelId}, stopping retries`
-          );
         }
       }
     },

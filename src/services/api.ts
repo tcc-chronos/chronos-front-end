@@ -27,24 +27,21 @@ export const api = {
 
     if (!response.ok) {
       let errorMessage = `HTTP error! status: ${response.status}`;
-      try {
-        const errorData = await response.json();
+      const errorData = await response.json().catch(() => null);
 
-        if (errorData.detail) {
-          errorMessage =
-            typeof errorData.detail === 'string'
-              ? errorData.detail
-              : JSON.stringify(errorData.detail);
-        } else if (errorData.message) {
-          errorMessage = errorData.message;
-        } else if (errorData.error) {
-          errorMessage = errorData.error;
-        } else {
-          errorMessage = `${errorMessage} - ${JSON.stringify(errorData)}`;
-        }
-      } catch {
-        // Ignore parsing errors
+      if (errorData?.detail) {
+        errorMessage =
+          typeof errorData.detail === 'string'
+            ? errorData.detail
+            : JSON.stringify(errorData.detail);
+      } else if (errorData?.message) {
+        errorMessage = errorData.message;
+      } else if (errorData?.error) {
+        errorMessage = errorData.error;
+      } else if (errorData) {
+        errorMessage = `${errorMessage} - ${JSON.stringify(errorData)}`;
       }
+
       throw new Error(errorMessage);
     }
 

@@ -43,7 +43,6 @@ export const useModelTypes = (
       const errorMessage =
         err instanceof Error ? err.message : 'Erro ao carregar tipos de modelo';
       setModelTypesError(errorMessage);
-      console.warn('useModelTypes: Failed to fetch model types', err);
     } finally {
       setModelTypesLoading(false);
     }

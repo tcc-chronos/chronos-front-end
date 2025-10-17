@@ -62,7 +62,6 @@ const sharedFetchModels = async (
         err instanceof Error ? err.message : 'Erro ao carregar modelos';
       sharedError = errorMessage;
       handleApiError(err, 'Carregamento de modelos');
-      console.error('Error fetching models:', err);
     } finally {
       sharedLoading = false;
       fetchPromise = null;
@@ -116,7 +115,6 @@ export const useModels = (): UseModelsReturn => {
         sharedError = errorMessage;
         notifyListeners();
         handleApiError(err, 'Remoção de modelo');
-        console.error('Error deleting model:', err);
         throw err;
       }
     },
@@ -143,7 +141,6 @@ export const useModels = (): UseModelsReturn => {
         sharedError = errorMessage;
         notifyListeners();
         handleApiError(err, 'Criação de treinamento');
-        console.error('Error creating training:', err);
         throw err;
       }
     },
@@ -165,7 +162,6 @@ export const useModels = (): UseModelsReturn => {
         sharedError = errorMessage;
         notifyListeners();
         handleApiError(err, 'Remoção de treinamento');
-        console.error('Error deleting training:', err);
         throw err;
       }
     },
@@ -234,7 +230,6 @@ export const useModels = (): UseModelsReturn => {
             : 'Erro ao copiar parâmetros do modelo';
         setError(errorMessage);
         handleApiError(err, 'Cópia de parâmetros');
-        console.error('Error copying model params:', err);
         throw err;
       }
     },

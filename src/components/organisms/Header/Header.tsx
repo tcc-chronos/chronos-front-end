@@ -3,11 +3,6 @@ import { Logo } from '../../atoms/Logo';
 import { Navigation } from '../../molecules/Navigation';
 import type { HeaderProps } from './Header.types';
 
-/**
- * Componente Header
- *
- * Organismo que combina Logo e Navigation numa navbar
- */
 const Header: React.FC<HeaderProps> = ({
   navigationItems = [
     { label: 'Training', href: '/' },

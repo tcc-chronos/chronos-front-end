@@ -5,11 +5,6 @@ import { DocumentationContent } from '../../organisms/DocumentationContent';
 import { useSidebar } from '../../../hooks/useSidebar';
 import documentationData from '../../../data/documentation.json';
 
-/**
- * Documentation Page
- * Página de documentação integrada com DefaultLayout
- * Utiliza a Sidebar do contexto para navegação
- */
 const Documentation: React.FC = () => {
   const { addItem, clearItems } = useSidebar();
 

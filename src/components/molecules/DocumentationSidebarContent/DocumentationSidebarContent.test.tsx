@@ -19,7 +19,7 @@ vi.mock('../../../data/documentation.json', () => ({
 describe('DocumentationSidebarContent', () => {
   it('renders sidebar title', () => {
     render(<DocumentationSidebarContent />);
-    expect(screen.getByText('Conteúdo')).toBeInTheDocument();
+    expect(screen.getByText('Documentação')).toBeInTheDocument();
   });
 
   it('renders navigation sections', () => {

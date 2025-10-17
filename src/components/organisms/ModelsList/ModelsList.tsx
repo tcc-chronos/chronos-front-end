@@ -82,8 +82,6 @@ const ModelsList: React.FC<ModelsListProps> = ({ className = '' }) => {
         modelId: null,
         modelName: '',
       });
-    } catch (error) {
-      console.error('Failed to delete model:', error);
     } finally {
       setActionLoading(prev => ({ ...prev, deletingModel: null }));
     }
@@ -118,8 +116,6 @@ const ModelsList: React.FC<ModelsListProps> = ({ className = '' }) => {
         modelId: null,
         modelName: '',
       });
-    } catch (error) {
-      console.error('Failed to delete training:', error);
     } finally {
       setActionLoading(prev => ({ ...prev, deletingTraining: null }));
     }
@@ -148,19 +144,13 @@ const ModelsList: React.FC<ModelsListProps> = ({ className = '' }) => {
         isOpen: false,
         model: null,
       });
-    } catch (error) {
-      console.error('Failed to create training:', error);
     } finally {
       setActionLoading(prev => ({ ...prev, creatingTraining: null }));
     }
   };
 
   const handleCopyParams = async (model: Model) => {
-    try {
-      await copyModelParams(model.id);
-    } catch (error) {
-      console.error('Failed to copy model params:', error);
-    }
+    await copyModelParams(model.id).catch(() => {});
   };
 
   if (loading) {
@@ -174,7 +164,6 @@ const ModelsList: React.FC<ModelsListProps> = ({ className = '' }) => {
     );
   }
 
-  // Empty state
   if (models.length === 0) {
     return (
       <div className={`text-center py-12 ${className}`}>

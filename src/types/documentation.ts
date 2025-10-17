@@ -1,7 +1,3 @@
-/**
- * Documentation types
- */
-
 export interface DocumentationSection {
   id: string;
   title: string;

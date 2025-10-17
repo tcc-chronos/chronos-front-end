@@ -1,10 +1,6 @@
 import { DocumentationNav } from '../../molecules/DocumentationNav';
 import { type DocumentationSidebarProps } from './DocumentationSidebar.types';
 
-/**
- * DocumentationSidebar Organism
- * Sidebar completa com navegação da documentação
- */
 const DocumentationSidebar: React.FC<DocumentationSidebarProps> = ({
   sections,
 }) => {

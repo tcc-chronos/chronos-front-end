@@ -14,7 +14,7 @@ const DocumentationSidebarContent: React.FC<
 > = ({ className = '', ...props }) => {
   return (
     <SidebarContent
-      title='Conteúdo'
+      title='Documentação'
       variant='default'
       className={className}
       {...props}
