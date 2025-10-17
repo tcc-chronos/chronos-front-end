@@ -1,5 +1,6 @@
 import React from 'react';
 import { Check } from 'lucide-react';
+import { formatDateTimeToBrazilTimezone } from '../../../utils';
 import type { SelectableTrainingCardProps } from './SelectableTrainingCard.types';
 
 const SelectableTrainingCard: React.FC<SelectableTrainingCardProps> = ({
@@ -10,13 +11,7 @@ const SelectableTrainingCard: React.FC<SelectableTrainingCardProps> = ({
   isPredicting = false,
 }) => {
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    return formatDateTimeToBrazilTimezone(dateString);
   };
 
   const formatMetric = (value: number) => {

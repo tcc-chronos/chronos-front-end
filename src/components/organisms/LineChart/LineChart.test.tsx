@@ -12,9 +12,7 @@ describe('LineChart', () => {
 
   it('should render loading message when loading is true', () => {
     render(<LineChart data={[]} loading={true} />);
-    expect(
-      screen.getByText('Aguarde, modelo em treinamento')
-    ).toBeInTheDocument();
+    expect(screen.getByText('Carregando...')).toBeInTheDocument();
   });
 
   it('should render empty state message when no data is provided', () => {
@@ -24,7 +22,7 @@ describe('LineChart', () => {
 
   it('should render chart with data', () => {
     render(<LineChart data={mockData} columnName='Temperatura' />);
-    expect(screen.getByText(/Previsão de: Temperatura/i)).toBeInTheDocument();
+    expect(screen.getByText('Temperatura')).toBeInTheDocument();
   });
 
   it('should apply custom className', () => {

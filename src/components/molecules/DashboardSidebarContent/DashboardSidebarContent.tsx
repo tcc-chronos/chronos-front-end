@@ -11,29 +11,64 @@ import { useModels } from '../../../hooks/useModels';
 import { usePredictionPolling, usePrediction } from '../../../contexts';
 import type { DashboardSidebarContentProps } from './DashboardSidebarContent.types';
 
+const SELECTED_TRAINING_STORAGE_KEY = 'chronos-selected-training';
+const EXPANDED_MODELS_STORAGE_KEY = 'chronos-expanded-models';
+
 const DashboardSidebarContent: React.FC<DashboardSidebarContentProps> = ({
   className = '',
   ...props
 }) => {
   const { models, loading } = useModels();
-  const { isPolling, togglePolling, stopPolling } = usePredictionPolling();
+  const { isPolling, togglePolling } = usePredictionPolling();
   const { isLoading: isPredicting } = usePrediction();
   const [searchQuery, setSearchQuery] = useState('');
-  const [expandedModels, setExpandedModels] = useState<Set<string>>(new Set());
+  const [expandedModels, setExpandedModels] = useState<Set<string>>(() => {
+    // Carregar modelos expandidos do localStorage
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem(EXPANDED_MODELS_STORAGE_KEY);
+        return saved ? new Set(JSON.parse(saved)) : new Set();
+      } catch {
+        return new Set();
+      }
+    }
+    return new Set();
+  });
   const [selectedTraining, setSelectedTraining] = useState<{
     modelId: string;
     trainingId: string;
-  } | null>(null);
+  } | null>(() => {
+    // Carregar treinamento selecionado do localStorage
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem(SELECTED_TRAINING_STORAGE_KEY);
+        return saved ? JSON.parse(saved) : null;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
 
   const filteredModels = useMemo(() => {
-    const modelsWithTrainings = models.filter(
-      model => model.trainings && model.trainings.length > 0
-    );
+    // Filtrar apenas modelos que têm treinamentos completos
+    const modelsWithCompletedTrainings = models
+      .filter(model => model.trainings && model.trainings.length > 0)
+      .filter(model =>
+        model.trainings.some(training => training.status === 'completed')
+      )
+      .map(model => ({
+        ...model,
+        // Filtrar apenas treinamentos completos dentro de cada modelo
+        trainings: model.trainings.filter(
+          training => training.status === 'completed'
+        ),
+      }));
 
-    if (!searchQuery.trim()) return modelsWithTrainings;
+    if (!searchQuery.trim()) return modelsWithCompletedTrainings;
 
     const query = searchQuery.toLowerCase();
-    return modelsWithTrainings.filter(
+    return modelsWithCompletedTrainings.filter(
       model =>
         model.name.toLowerCase().includes(query) ||
         model.rnnType.toLowerCase().includes(query) ||
@@ -42,27 +77,108 @@ const DashboardSidebarContent: React.FC<DashboardSidebarContentProps> = ({
     );
   }, [models, searchQuery]);
 
+  // Validar se o treinamento selecionado ainda existe quando os modelos mudarem
+  useEffect(() => {
+    if (selectedTraining && models.length > 0) {
+      const selectedModel = models.find(
+        model => model.id === selectedTraining.modelId
+      );
+      const selectedTrainingExists = selectedModel?.trainings?.some(
+        training => training.id === selectedTraining.trainingId
+      );
+
+      if (!selectedTrainingExists) {
+        // Se o treinamento selecionado não existe mais, limpar a seleção
+        setSelectedTraining(null);
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem(SELECTED_TRAINING_STORAGE_KEY);
+        }
+      } else if (selectedModel) {
+        // Se o modelo existe, garantir que está expandido para mostrar o treinamento selecionado
+        setExpandedModels(prev => {
+          if (!prev.has(selectedModel.id)) {
+            const newSet = new Set(prev);
+            newSet.add(selectedModel.id);
+
+            if (typeof window !== 'undefined') {
+              try {
+                localStorage.setItem(
+                  EXPANDED_MODELS_STORAGE_KEY,
+                  JSON.stringify(Array.from(newSet))
+                );
+              } catch (error) {
+                console.warn(
+                  'Falha ao salvar modelos expandidos no localStorage:',
+                  error
+                );
+              }
+            }
+
+            return newSet;
+          }
+          return prev;
+        });
+      }
+    }
+  }, [models, selectedTraining]);
+
   const handleToggleExpanded = (modelId: string) => {
     setExpandedModels(prev => {
       const newSet = new Set(prev);
       if (newSet.has(modelId)) {
         newSet.delete(modelId);
-        if (selectedTraining?.modelId === modelId) {
-          setSelectedTraining(null);
-        }
+        // Não limpar a seleção quando fechar o card
+        // A seleção deve persistir mesmo com o card fechado
       } else {
         newSet.add(modelId);
       }
+
+      // Persistir no localStorage
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem(
+            EXPANDED_MODELS_STORAGE_KEY,
+            JSON.stringify(Array.from(newSet))
+          );
+        } catch (error) {
+          console.warn(
+            'Falha ao salvar modelos expandidos no localStorage:',
+            error
+          );
+        }
+      }
+
       return newSet;
     });
   };
 
   const handleSelectTraining = (modelId: string, trainingId: string) => {
     setSelectedTraining(prev => {
-      if (prev?.modelId === modelId && prev?.trainingId === trainingId) {
-        return null;
+      const newSelection =
+        prev?.modelId === modelId && prev?.trainingId === trainingId
+          ? null
+          : { modelId, trainingId };
+
+      // Persistir no localStorage
+      if (typeof window !== 'undefined') {
+        try {
+          if (newSelection) {
+            localStorage.setItem(
+              SELECTED_TRAINING_STORAGE_KEY,
+              JSON.stringify(newSelection)
+            );
+          } else {
+            localStorage.removeItem(SELECTED_TRAINING_STORAGE_KEY);
+          }
+        } catch (error) {
+          console.warn(
+            'Falha ao salvar treinamento selecionado no localStorage:',
+            error
+          );
+        }
       }
-      return { modelId, trainingId };
+
+      return newSelection;
     });
   };
 
@@ -70,25 +186,6 @@ const DashboardSidebarContent: React.FC<DashboardSidebarContentProps> = ({
     if (!selectedTraining?.modelId || !selectedTraining?.trainingId) return;
 
     togglePolling(selectedTraining.modelId, selectedTraining.trainingId);
-  };
-
-  useEffect(() => {
-    if (isPolling) {
-      stopPolling();
-    }
-  }, [
-    selectedTraining?.modelId,
-    selectedTraining?.trainingId,
-    isPolling,
-    stopPolling,
-  ]);
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    });
   };
 
   if (loading) {
@@ -119,7 +216,7 @@ const DashboardSidebarContent: React.FC<DashboardSidebarContentProps> = ({
       <div className='space-y-4'>
         <InputField
           id='search-models'
-          label='Buscar Modelos'
+          label='Buscar modelos:'
           placeholder='Buscar por nome, tipo, dispositivo...'
           value={searchQuery}
           onChange={setSearchQuery}
@@ -127,34 +224,30 @@ const DashboardSidebarContent: React.FC<DashboardSidebarContentProps> = ({
           leftIcon={<Search size={16} />}
         />
 
-        <div className='space-y-3 max-h-[calc(100vh-290px)] overflow-y-auto pr-2'>
+        <div className='space-y-3 max-h-[calc(100vh-290px)] overflow-y-auto'>
           {filteredModels.length === 0 ? (
             <div className='text-center py-8 text-gray-500 text-sm'>
               {searchQuery
-                ? 'Nenhum modelo com treinamentos encontrado com este filtro.'
-                : 'Nenhum modelo com treinamentos disponível para predição.'}
+                ? 'Nenhum modelo com treinamentos completos encontrado com este filtro.'
+                : 'Nenhum modelo com treinamentos completos disponível para predição.'}
             </div>
           ) : (
             filteredModels.map(model => {
               const isExpanded = expandedModels.has(model.id);
-              const hasCompletedTrainings = model.trainings.some(
-                t => t.status === 'completed'
-              );
 
               return (
                 <div
                   key={model.id}
-                  className='bg-white rounded-lg border border-gray-200 shadow-sm'
+                  className={`bg-white rounded-lg border border-gray-200 shadow-sm`}
                 >
                   <div className='p-4'>
                     <div className='flex items-center justify-between mb-2'>
-                      <div>
-                        <h3 className='text-sm font-semibold text-gray-900'>
-                          {model.name}
-                        </h3>
-                        <span className='font-light text-gray-900'>
-                          {formatDate(model.createdAt)}
-                        </span>
+                      <div className='flex items-center space-x-2'>
+                        <div>
+                          <h3 className='text-sm font-semibold text-gray-900'>
+                            {model.name}
+                          </h3>
+                        </div>
                       </div>
 
                       <IconButton
@@ -180,7 +273,7 @@ const DashboardSidebarContent: React.FC<DashboardSidebarContentProps> = ({
                       />
                     </div>
 
-                    <div className='space-y-2'>
+                    <div className='space-y-2 text-nowrap'>
                       <div className='grid grid-cols-2 gap-2 text-xs'>
                         <div>
                           <span className='text-gray-500'>Tipo:</span>{' '}
@@ -205,12 +298,6 @@ const DashboardSidebarContent: React.FC<DashboardSidebarContentProps> = ({
                         </div>
                       </div>
                     </div>
-
-                    {!hasCompletedTrainings && model.trainings.length > 0 && (
-                      <p className='text-xs text-yellow-600 mt-2'>
-                        Nenhum treinamento completo disponível para predição.
-                      </p>
-                    )}
                   </div>
 
                   {isExpanded && model.trainings.length > 0 && (

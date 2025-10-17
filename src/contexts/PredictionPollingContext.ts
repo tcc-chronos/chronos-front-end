@@ -5,6 +5,7 @@ export interface PredictionPollingContextType {
   startPolling: (modelId: string, trainingId: string) => void;
   stopPolling: () => void;
   togglePolling: (modelId: string, trainingId: string) => void;
+  clearSelection: () => void;
 }
 
 export const PredictionPollingContext = createContext<

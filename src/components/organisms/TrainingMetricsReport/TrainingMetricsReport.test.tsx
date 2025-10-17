@@ -10,6 +10,8 @@ describe('TrainingMetricsReport', () => {
     training_datetime: '2024-01-01T12:00:00',
     mean_absolute_error: 0.123,
     root_mean_squared_error: 0.456,
+    model_type: 'LSTM',
+    data_volume: 12500,
   };
 
   it('should return null when metrics is null', () => {
@@ -21,8 +23,9 @@ describe('TrainingMetricsReport', () => {
     render(<TrainingMetricsReport metrics={mockMetrics} />);
 
     expect(screen.getByText('Relatório de Treinamento')).toBeInTheDocument();
-    expect(screen.getByText('Sucesso')).toBeInTheDocument();
+    expect(screen.getByText('LSTM')).toBeInTheDocument();
     expect(screen.getByText('45.3s')).toBeInTheDocument();
+    expect(screen.getByText('12.500 registros')).toBeInTheDocument();
   });
 
   it('should render MAE metric', () => {
@@ -39,11 +42,11 @@ describe('TrainingMetricsReport', () => {
     expect(screen.getByText('0.456')).toBeInTheDocument();
   });
 
-  it('should show failure status when success is false', () => {
-    const failedMetrics = { ...mockMetrics, success: false };
-    render(<TrainingMetricsReport metrics={failedMetrics} />);
+  it('should render with different model types', () => {
+    const gruMetrics = { ...mockMetrics, model_type: 'GRU' };
+    render(<TrainingMetricsReport metrics={gruMetrics} />);
 
-    expect(screen.getByText('Falha')).toBeInTheDocument();
+    expect(screen.getByText('GRU')).toBeInTheDocument();
   });
 
   it('should apply custom className', () => {
@@ -51,12 +54,5 @@ describe('TrainingMetricsReport', () => {
       <TrainingMetricsReport metrics={mockMetrics} className='custom-class' />
     );
     expect(container.firstChild).toHaveClass('custom-class');
-  });
-
-  it('should format datetime correctly', () => {
-    render(<TrainingMetricsReport metrics={mockMetrics} />);
-
-    // A data será formatada de acordo com a localização pt-BR
-    expect(screen.getByText(/01\/01\/2024/)).toBeInTheDocument();
   });
 });

@@ -1,11 +1,6 @@
 import React from 'react';
 import type { TrainingMetricsReportProps } from './TrainingMetricsReport.types';
 
-const formatDatetime = (isoString: string): string => {
-  const date = new Date(isoString);
-  return date.toLocaleString('pt-BR', { hour12: false });
-};
-
 const TrainingMetricsReport: React.FC<TrainingMetricsReportProps> = ({
   metrics,
   className = '',
@@ -13,53 +8,47 @@ const TrainingMetricsReport: React.FC<TrainingMetricsReportProps> = ({
   if (!metrics) return null;
 
   const {
-    success,
     training_time,
-    training_datetime,
     mean_absolute_error,
     mean_squared_error,
     root_mean_squared_error,
     theil_u,
+    model_type,
+    data_volume,
+    // Novos campos
+    training_duration,
+    total_points,
   } = metrics;
 
   return (
     <div className={className}>
-      <h2 className='text-2xl font-bold text-gray-800 mb-4'>
+      <h2 className='text-xl font-semibold text-gray-900 mb-4'>
         Relatório de Treinamento
       </h2>
       <div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-5 gap-4'>
         {/* Card de Informações de Treinamento */}
         <div className='lg:col-span-2 xl:col-span-1 bg-white rounded-2xl shadow-lg p-6 space-y-4'>
-          <h3 className='text-lg font-semibold text-gray-700 mb-3 border-b border-gray-200 pb-2'>
-            Informações do Treinamento
-          </h3>
           <div className='space-y-3'>
-            <div className='flex items-center justify-between'>
-              <span className='text-gray-600 font-medium'>Status:</span>
-              <span
-                className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                  success
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-red-100 text-red-800'
-                }`}
-              >
-                {success ? 'Sucesso' : 'Falha'}
+            <div className='flex items-center'>
+              <span className='text-gray-600 font-medium mr-2'>Tipo:</span>
+              <span className='text-gray-800 font-semibold'>
+                {model_type?.toUpperCase() || 'N/A'}
               </span>
             </div>
-            <div className='flex items-center justify-between'>
-              <span className='text-gray-600 font-medium'>
-                Último treinamento:
-              </span>
-              <span className='text-gray-800'>
-                {formatDatetime(training_datetime)}
+            <div className='flex items-center'>
+              <span className='text-gray-600 font-medium mr-2'>Volume:</span>
+              <span className='text-gray-800 font-semibold'>
+                {total_points || data_volume
+                  ? `${(total_points || data_volume)?.toLocaleString()} registros`
+                  : 'N/A'}
               </span>
             </div>
-            <div className='flex items-center justify-between'>
-              <span className='text-gray-600 font-medium'>
+            <div className='flex items-center'>
+              <span className='text-gray-600 font-medium mr-2'>
                 Tempo de treinamento:
               </span>
               <span className='text-gray-800 font-semibold'>
-                {training_time.toFixed(1)}s
+                {(training_duration || training_time)?.toFixed(1)}s
               </span>
             </div>
           </div>
@@ -90,7 +79,7 @@ const TrainingMetricsReport: React.FC<TrainingMetricsReportProps> = ({
                   Mean Squared Error
                 </span>
               </p>
-              <p className='text-green-600 font-bold text-4xl'>
+              <p className='text-blue-600 font-bold text-4xl'>
                 {mean_squared_error.toFixed(3)}
               </p>
             </div>
@@ -106,7 +95,7 @@ const TrainingMetricsReport: React.FC<TrainingMetricsReportProps> = ({
                 Root Mean Squared Error
               </span>
             </p>
-            <p className='text-purple-600 font-bold text-4xl'>
+            <p className='text-blue-600 font-bold text-4xl'>
               {root_mean_squared_error.toFixed(3)}
             </p>
           </div>
@@ -122,7 +111,7 @@ const TrainingMetricsReport: React.FC<TrainingMetricsReportProps> = ({
                   Theil Inequality Coefficient
                 </span>
               </p>
-              <p className='text-orange-600 font-bold text-4xl'>
+              <p className='text-blue-600 font-bold text-4xl'>
                 {theil_u.toFixed(3)}
               </p>
             </div>

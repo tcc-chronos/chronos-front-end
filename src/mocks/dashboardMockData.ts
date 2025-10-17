@@ -24,6 +24,8 @@ export const mockTrainingMetrics: TrainingMetrics = {
   training_datetime: '2024-01-15T07:30:00',
   mean_absolute_error: 0.342,
   root_mean_squared_error: 0.518,
+  model_type: 'LSTM',
+  data_volume: 15420,
 };
 
 export const mockFailedTrainingMetrics: TrainingMetrics = {
@@ -32,4 +34,6 @@ export const mockFailedTrainingMetrics: TrainingMetrics = {
   training_datetime: '2024-01-14T18:45:00',
   mean_absolute_error: 2.145,
   root_mean_squared_error: 3.872,
+  model_type: 'GRU',
+  data_volume: 8750,
 };

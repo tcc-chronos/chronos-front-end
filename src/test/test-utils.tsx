@@ -7,15 +7,18 @@ import { NotificationProvider } from '../contexts/NotificationProvider';
 import { SidebarProvider } from '../contexts/SidebarProvider';
 import { PredictionProvider } from '../contexts/PredictionProvider';
 import { PredictionPollingProvider } from '../contexts/PredictionPollingProvider';
+import { PageLifecycleProvider } from '../contexts/PageLifecycleProvider';
 
 const AllTheProviders = ({ children }: { children: ReactNode }) => {
   return (
     <BrowserRouter>
       <NotificationProvider>
         <SidebarProvider>
-          <PredictionProvider>
-            <PredictionPollingProvider>{children}</PredictionPollingProvider>
-          </PredictionProvider>
+          <PageLifecycleProvider>
+            <PredictionProvider>
+              <PredictionPollingProvider>{children}</PredictionPollingProvider>
+            </PredictionProvider>
+          </PageLifecycleProvider>
         </SidebarProvider>
       </NotificationProvider>
     </BrowserRouter>

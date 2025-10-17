@@ -3,6 +3,7 @@ import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { render } from '../../../test/test-utils';
 import PredictButton from './PredictButton';
 import { ModelsService } from '../../../services/models';
+import type { PredictionResponse } from '../../../types/prediction';
 
 vi.mock('../../../services/models');
 vi.mock('../../../hooks/useNotifications', () => ({
@@ -34,7 +35,9 @@ describe('PredictButton', () => {
   });
 
   it('calls predict service on click', async () => {
-    const mockPredict = vi.spyOn(ModelsService, 'predict').mockResolvedValue();
+    const mockPredict = vi
+      .spyOn(ModelsService, 'predict')
+      .mockResolvedValue({} as PredictionResponse);
 
     render(<PredictButton modelId='model-1' trainingId='training-1' />);
 

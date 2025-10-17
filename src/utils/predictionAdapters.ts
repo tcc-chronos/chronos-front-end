@@ -12,7 +12,6 @@ export const convertPredictionToChartData = (
 ): ChartDataPoint[] => {
   const chartData: ChartDataPoint[] = [];
 
-  // Adicionar dados do context_window (valores reais)
   prediction.context_window.forEach(point => {
     chartData.push({
       dataHora: point.timestamp,
@@ -22,17 +21,12 @@ export const convertPredictionToChartData = (
     });
   });
 
-  // Obter último valor do context_window e primeira predição para conexão
   const lastContextPoint =
     prediction.context_window[prediction.context_window.length - 1];
   const firstPrediction = prediction.predictions[0];
 
-  // Adicionar ponto de conexão entre último valor real e primeira previsão
   if (lastContextPoint && firstPrediction) {
-    // Adicionar ponto final do context_window com conexão
     chartData[chartData.length - 1].conexao = lastContextPoint.value;
-
-    // Adicionar ponto inicial da previsão com conexão
     chartData.push({
       dataHora: firstPrediction.timestamp,
       real: null,
@@ -40,7 +34,6 @@ export const convertPredictionToChartData = (
       conexao: firstPrediction.value,
     });
 
-    // Adicionar demais predições (a partir da segunda)
     prediction.predictions.slice(1).forEach(pred => {
       chartData.push({
         dataHora: pred.timestamp,
@@ -50,7 +43,6 @@ export const convertPredictionToChartData = (
       });
     });
   } else {
-    // Fallback: adicionar todas as predições normalmente se não houver conexão
     prediction.predictions.forEach(pred => {
       chartData.push({
         dataHora: pred.timestamp,
@@ -70,7 +62,7 @@ export const convertPredictionToChartData = (
 export const convertPredictionToTrainingMetrics = (
   prediction: PredictionResponse
 ): TrainingMetrics => {
-  const { training_metrics, stored_metadata } = prediction.metadata;
+  const { training_metrics, stored_metadata, model_info } = prediction.metadata;
 
   return {
     success: true, // Se chegou até aqui, a predição foi bem-sucedida
@@ -80,24 +72,20 @@ export const convertPredictionToTrainingMetrics = (
     mean_squared_error: training_metrics.mse,
     root_mean_squared_error: training_metrics.rmse,
     theil_u: training_metrics.theil_u,
+    model_type: model_info.model_type,
+    data_volume: stored_metadata.data_info.total_points,
   };
 };
 
 /**
  * Extrai o nome da feature/atributo dos dados da predição
+ * Formato: {feature} - {entity_id}
  */
 export const getPredictionFeatureName = (
   prediction: PredictionResponse
 ): string => {
   const featureName = prediction.metadata.feature;
+  const entityId = prediction.metadata.entity_id;
 
-  // Mapear nomes de features comuns para nomes mais amigáveis
-  const featureMap: Record<string, string> = {
-    temperature: 'Temperatura (°C)',
-    humidity: 'Umidade (%)',
-    pressure: 'Pressão (hPa)',
-    luminosity: 'Luminosidade (lux)',
-  };
-
-  return featureMap[featureName] || featureName;
+  return `${featureName} - ${entityId}`;
 };

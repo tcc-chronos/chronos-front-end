@@ -5,7 +5,11 @@ import { ModelsService } from '../services/models';
 import type { PredictionResponse } from '../types/prediction';
 
 interface UsePredictionSubmissionReturn {
-  submitPrediction: (modelId: string, trainingId: string) => Promise<void>;
+  submitPrediction: (
+    modelId: string,
+    trainingId: string,
+    suppressNotification?: boolean
+  ) => Promise<void>;
   isLoading: boolean;
   predictionData: PredictionResponse | null;
   clearPrediction: () => void;
@@ -20,7 +24,11 @@ export const usePredictionSubmission = (): UsePredictionSubmissionReturn => {
   const { addNotification } = useNotifications();
 
   const submitPrediction = useCallback(
-    async (modelId: string, trainingId: string): Promise<void> => {
+    async (
+      modelId: string,
+      trainingId: string,
+      suppressNotification = false
+    ): Promise<void> => {
       if (!modelId || !trainingId) {
         addNotification({
           type: 'error',
@@ -36,24 +44,16 @@ export const usePredictionSubmission = (): UsePredictionSubmissionReturn => {
       try {
         const result = await ModelsService.predict(modelId, trainingId);
 
-        console.log('📊 [usePredictionSubmission] Dados recebidos da API:', {
-          modelId,
-          trainingId,
-          contextWindowPoints: result.context_window?.length || 0,
-          predictionsPoints: result.predictions?.length || 0,
-          feature: result.metadata?.feature,
-          fullData: result,
-        });
-
         setPredictionData(result);
 
-        console.log('✅ [usePredictionSubmission] Dados salvos no contexto');
-
-        addNotification({
-          type: 'success',
-          title: 'Predição Concluída',
-          message: `Predição realizada com sucesso para ${result.metadata.feature}!`,
-        });
+        // Não exibir notificação se solicitado (durante polling)
+        if (!suppressNotification) {
+          addNotification({
+            type: 'success',
+            title: 'Predição Concluída',
+            message: `Predição realizada com sucesso para ${result.metadata.feature}!`,
+          });
+        }
       } catch (error) {
         const errorMessage =
           error instanceof Error

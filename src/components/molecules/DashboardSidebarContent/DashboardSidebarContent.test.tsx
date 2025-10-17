@@ -44,13 +44,13 @@ describe('DashboardSidebarContent', () => {
 
   it('renders search input', () => {
     render(<DashboardSidebarContent />);
-    expect(screen.getByLabelText('Buscar Modelos')).toBeInTheDocument();
+    expect(screen.getByLabelText('Buscar modelos:')).toBeInTheDocument();
   });
 
   it('filters models by search query', () => {
     render(<DashboardSidebarContent />);
 
-    const searchInput = screen.getByLabelText('Buscar Modelos');
+    const searchInput = screen.getByLabelText('Buscar modelos:');
     fireEvent.change(searchInput, { target: { value: 'Teste 1' } });
 
     expect(screen.getByText('Modelo Teste 1')).toBeInTheDocument();
@@ -82,7 +82,7 @@ describe('DashboardSidebarContent', () => {
     expect(screen.getByText('Carregando modelos...')).toBeInTheDocument();
   });
 
-  it('shows empty state when no models with trainings', () => {
+  it('shows empty state when no models with completed trainings', () => {
     vi.mocked(useModels).mockReturnValue({
       models: [],
       loading: false,
@@ -98,12 +98,12 @@ describe('DashboardSidebarContent', () => {
     render(<DashboardSidebarContent />);
     expect(
       screen.getByText(
-        'Nenhum modelo com treinamentos disponível para predição.'
+        'Nenhum modelo com treinamentos completos disponível para predição.'
       )
     ).toBeInTheDocument();
   });
 
-  it('filters models to show only those with trainings', () => {
+  it('filters models to show only those with completed trainings', () => {
     const modelsWithAndWithoutTrainings = [
       ...mockModels,
       {
@@ -132,10 +132,61 @@ describe('DashboardSidebarContent', () => {
 
     render(<DashboardSidebarContent />);
 
-    // Deve mostrar apenas o modelo com treinamentos
+    // Deve mostrar apenas o modelo com treinamentos completos
     expect(screen.getByText('Modelo Teste 1')).toBeInTheDocument();
     expect(
       screen.queryByText('Modelo Sem Treinamentos')
+    ).not.toBeInTheDocument();
+  });
+
+  it('filters models to exclude those with only non-completed trainings', () => {
+    const modelsWithIncompleteTrainings = [
+      ...mockModels,
+      {
+        id: 'model-3',
+        name: 'Modelo Com Treinamentos Incompletos',
+        rnnType: 'gru',
+        device: 'Device-003',
+        attribute: 'pressure',
+        createdAt: '2024-01-03',
+        status: 'training',
+        trainings: [
+          {
+            id: 'training-2',
+            trainingDate: '2024-01-03T12:00:00Z',
+            dataVolume: 500,
+            status: 'running' as const,
+            metrics: { mae: 0, mse: 0, rmse: 0, theil_u: 0 },
+          },
+          {
+            id: 'training-3',
+            trainingDate: '2024-01-03T14:00:00Z',
+            dataVolume: 750,
+            status: 'failed' as const,
+            metrics: { mae: 0, mse: 0, rmse: 0, theil_u: 0 },
+          },
+        ],
+      },
+    ];
+
+    vi.mocked(useModels).mockReturnValue({
+      models: modelsWithIncompleteTrainings,
+      loading: false,
+      error: null,
+      deleteModel: vi.fn(),
+      createTraining: vi.fn(),
+      deleteTraining: vi.fn(),
+      copyModelParams: vi.fn(),
+      fetchModels: vi.fn(),
+      isPolling: false,
+    });
+
+    render(<DashboardSidebarContent />);
+
+    // Deve mostrar apenas o modelo com treinamentos completos
+    expect(screen.getByText('Modelo Teste 1')).toBeInTheDocument();
+    expect(
+      screen.queryByText('Modelo Com Treinamentos Incompletos')
     ).not.toBeInTheDocument();
   });
 });

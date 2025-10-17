@@ -50,7 +50,6 @@ export const useTrainingSubmission = (): UseTrainingSubmissionReturn => {
         err instanceof Error ? err.message : 'Erro ao criar modelo';
       setError(errorMessage);
       handleApiError(err, 'Criação de modelo');
-      console.error('Error creating model:', err);
     } finally {
       setIsSubmitting(false);
     }

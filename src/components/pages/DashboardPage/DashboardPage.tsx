@@ -3,7 +3,6 @@ import { Brain } from 'lucide-react';
 import { useSidebar } from '../../../hooks/useSidebar';
 import { usePrediction, usePredictionPolling } from '../../../contexts';
 import { DashboardSidebarContent } from '../../molecules';
-import { useModels } from '../../../hooks/useModels';
 import { LineChart, TrainingMetricsReport } from '../../organisms';
 import {
   convertPredictionToChartData,
@@ -14,16 +13,27 @@ import type { ChartDataPoint } from '../../organisms/LineChart/LineChart.types';
 import type { TrainingMetrics } from '../../organisms/TrainingMetricsReport/TrainingMetricsReport.types';
 
 const DashboardPage: React.FC = () => {
-  const { addItem, clearItems } = useSidebar();
-  const { isPolling: isTrainingPolling } = useModels();
+  const { addItem, clearItemsPreservingActive } = useSidebar();
   const { isPolling: isPredictionPolling } = usePredictionPolling();
   const { predictionData, isLoading } = usePrediction();
+
+  useEffect(() => {
+    return () => {};
+  }, []);
 
   const chartData = useMemo<ChartDataPoint[]>(() => {
     if (!predictionData) {
       return [];
     }
-    return convertPredictionToChartData(predictionData);
+
+    const converted = convertPredictionToChartData(predictionData);
+    console.log('📊 [DashboardPage] Dados convertidos para gráfico:', {
+      chartDataLength: converted.length,
+      firstPoint: converted[0],
+      lastPoint: converted[converted.length - 1],
+    });
+
+    return converted;
   }, [predictionData]);
 
   const trainingMetrics = useMemo<TrainingMetrics | null>(() => {
@@ -37,7 +47,7 @@ const DashboardPage: React.FC = () => {
   }, [predictionData]);
 
   useEffect(() => {
-    clearItems();
+    clearItemsPreservingActive();
 
     addItem({
       id: 'prediction',
@@ -48,23 +58,14 @@ const DashboardPage: React.FC = () => {
     });
 
     return () => {
-      clearItems();
+      clearItemsPreservingActive();
     };
-  }, [addItem, clearItems]);
+  }, [addItem, clearItemsPreservingActive]);
 
   return (
     <div className='space-y-6'>
       <div>
         <h1 className='text-3xl font-bold text-gray-900'>Dashboard</h1>
-
-        {isTrainingPolling && (
-          <div className='mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg'>
-            <p className='text-sm text-blue-800'>
-              Existem treinamentos em andamento. Os modelos serão atualizados
-              automaticamente.
-            </p>
-          </div>
-        )}
       </div>
 
       <LineChart
