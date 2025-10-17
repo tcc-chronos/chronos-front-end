@@ -2,6 +2,7 @@ import { api } from './api';
 import type { ApiModel } from '../types/training';
 import type { CreateModelPayload } from '../store/trainingSidebarStore';
 import type { DevicesResponse, ModelType } from '../types/api';
+import type { PredictionResponse } from '../types/prediction';
 
 export type { ModelType, DevicesResponse };
 
@@ -44,6 +45,15 @@ export class ModelsService {
     trainingId: string
   ): Promise<void> {
     return api.delete<void>(`/models/${modelId}/training-jobs/${trainingId}`);
+  }
+
+  static async predict(
+    modelId: string,
+    trainingId: string
+  ): Promise<PredictionResponse> {
+    return api.post<PredictionResponse>(
+      `/models/${modelId}/training-jobs/${trainingId}/predict`
+    );
   }
 
   static async getModelTypes(): Promise<ModelType[]> {

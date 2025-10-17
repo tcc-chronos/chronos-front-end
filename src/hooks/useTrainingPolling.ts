@@ -76,7 +76,7 @@ export const useTrainingPolling = ({
         }
       }
     },
-    [onModelUpdate, maxRetries, setErrorCount]
+    [onModelUpdate, maxRetries]
   );
 
   const pollForUpdates = useCallback(async (): Promise<void> => {
@@ -123,32 +123,41 @@ export const useTrainingPolling = ({
     }
   }, []);
 
+  // Usar useRef para controlar se deve iniciar/parar polling
+  const shouldStartPollingRef = useRef(false);
+  const enabledRef = useRef(enabled);
+  const modelsRef = useRef(models);
+
+  // Atualizar refs
+  useEffect(() => {
+    enabledRef.current = enabled;
+    modelsRef.current = models;
+  }, [enabled, models]);
+
+  // Verificar se deve iniciar polling de forma mais estável
   useEffect(() => {
     if (!enabled) {
+      shouldStartPollingRef.current = false;
       stopPolling();
       return;
     }
 
-    const modelsWithActiveTrainings = getModelsWithActiveTrainings();
+    const modelsWithActiveTrainings = models.filter(
+      model => model.status === 'training'
+    );
+    const shouldStart = modelsWithActiveTrainings.length > 0;
 
-    if (modelsWithActiveTrainings.length > 0) {
-      if (isPolling) {
-        stopPolling();
-        setTimeout(() => startPolling(), 100);
-      } else {
+    // Só mudar se realmente precisar
+    if (shouldStart !== shouldStartPollingRef.current) {
+      shouldStartPollingRef.current = shouldStart;
+
+      if (shouldStart && !isPolling) {
         startPolling();
+      } else if (!shouldStart && isPolling) {
+        stopPolling();
       }
-    } else if (modelsWithActiveTrainings.length === 0 && isPolling) {
-      stopPolling();
     }
-  }, [
-    models,
-    enabled,
-    isPolling,
-    getModelsWithActiveTrainings,
-    startPolling,
-    stopPolling,
-  ]);
+  }, [enabled, models, isPolling, startPolling, stopPolling]);
 
   useEffect(() => {
     return () => {

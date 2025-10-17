@@ -13,6 +13,7 @@ const mockUseSidebar = {
   addItem: vi.fn(),
   removeItem: vi.fn(),
   clearItems: vi.fn(),
+  clearItemsPreservingActive: vi.fn(),
 };
 
 vi.mock('../../../hooks/useSidebar', () => ({

@@ -82,6 +82,8 @@ const ModelsList: React.FC<ModelsListProps> = ({ className = '' }) => {
         modelId: null,
         modelName: '',
       });
+    } catch {
+      // Error handled by hook
     } finally {
       setActionLoading(prev => ({ ...prev, deletingModel: null }));
     }
@@ -116,6 +118,8 @@ const ModelsList: React.FC<ModelsListProps> = ({ className = '' }) => {
         modelId: null,
         modelName: '',
       });
+    } catch {
+      // Error handled by hook
     } finally {
       setActionLoading(prev => ({ ...prev, deletingTraining: null }));
     }
@@ -144,6 +148,8 @@ const ModelsList: React.FC<ModelsListProps> = ({ className = '' }) => {
         isOpen: false,
         model: null,
       });
+    } catch {
+      // Error handled by hook
     } finally {
       setActionLoading(prev => ({ ...prev, creatingTraining: null }));
     }

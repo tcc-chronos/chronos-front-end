@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ModelsService } from '../services/models';
 import { ModelsAdapter } from '../utils/modelsAdapter';
-import { useTrainingPolling } from './useTrainingPolling';
+import { usePageAwareTrainingPolling } from './usePageAwareTrainingPolling';
 import { useTrainingSidebarStore } from '../store/trainingSidebarStore';
 import { useApiErrorHandler } from './useApiErrorHandler';
 import type { Model, CreateTrainingRequest } from '../types/training';
@@ -237,31 +237,40 @@ export const useModels = (): UseModelsReturn => {
   );
 
   const handleModelUpdate = useCallback((updatedModel: Model) => {
-    const oldModel = sharedModels.find(m => m.id === updatedModel.id);
+    const modelIndex = sharedModels.findIndex(m => m.id === updatedModel.id);
 
-    if (oldModel) {
-      const oldModelJson = JSON.stringify(oldModel);
-      const updatedModelJson = JSON.stringify(updatedModel);
-
-      if (oldModelJson === updatedModelJson) {
-        return;
-      }
+    if (modelIndex === -1) {
+      return;
     }
 
-    sharedModels = sharedModels.map(model =>
-      model.id === updatedModel.id ? updatedModel : model
-    );
+    const oldModel = sharedModels[modelIndex];
+
+    // Comparação otimizada - só verificar campos que realmente mudam durante treinamento
+    const hasChanged =
+      oldModel.status !== updatedModel.status ||
+      JSON.stringify(oldModel.trainings) !==
+        JSON.stringify(updatedModel.trainings);
+
+    if (!hasChanged) {
+      return; // Não há mudanças relevantes
+    }
+
+    // Atualizar apenas se realmente mudou
+    const newModels = [...sharedModels];
+    newModels[modelIndex] = updatedModel;
+    sharedModels = newModels;
 
     notifyListeners();
-  }, []);
+  }, []); // Sem dependências para evitar re-criação
 
   const hasActiveTrainings = models.some(model => model.status === 'training');
 
-  const { isPolling } = useTrainingPolling({
+  const { isPolling } = usePageAwareTrainingPolling({
     models,
     onModelUpdate: handleModelUpdate,
     pollingInterval: 10000,
     enabled: hasActiveTrainings,
+    targetPage: '/', // Polling ativo na página Training
   });
 
   useEffect(() => {

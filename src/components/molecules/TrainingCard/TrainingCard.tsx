@@ -1,17 +1,12 @@
 import React from 'react';
 import { Trash2 } from 'lucide-react';
 import { IconButton } from '../../atoms';
+import { formatDateTimeToBrazilTimezone } from '../../../utils';
 import type { TrainingCardProps } from './TrainingCard.types';
 
 const TrainingCard: React.FC<TrainingCardProps> = ({ training, onDelete }) => {
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    return formatDateTimeToBrazilTimezone(dateString);
   };
 
   const getStatusColor = (status: string) => {

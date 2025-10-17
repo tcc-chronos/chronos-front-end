@@ -5,7 +5,7 @@ import {
   ToastContainer,
   ApiErrorInterceptor,
 } from '../../organisms';
-import { SidebarProvider } from '../../../contexts/SidebarProvider';
+import { SidebarProvider } from '../../../contexts';
 
 const DefaultLayout = () => {
   return (

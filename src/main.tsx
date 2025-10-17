@@ -8,22 +8,32 @@ import {
   DashboardPage,
   Documentation,
 } from './components';
-import { NotificationProvider } from './contexts/NotificationProvider';
+import {
+  NotificationProvider,
+  PredictionProvider,
+  PredictionPollingProvider,
+  PageLifecycleProvider,
+} from './contexts';
 import './styles/globals.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <NotificationProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route element={<DefaultLayout />}>
-            <Route path='/' element={<Training />} />
-            <Route path='/dashboard' element={<DashboardPage />} />
-            <Route path='/documentation' element={<Documentation />} />
-            <Route path='*' element={<NotFound />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </NotificationProvider>
+    <BrowserRouter>
+      <PageLifecycleProvider>
+        <NotificationProvider>
+          <PredictionProvider>
+            <PredictionPollingProvider>
+              <Routes>
+                <Route element={<DefaultLayout />}>
+                  <Route path='/' element={<Training />} />
+                  <Route path='/dashboard' element={<DashboardPage />} />
+                  <Route path='*' element={<NotFound />} />
+                </Route>
+              </Routes>
+            </PredictionPollingProvider>
+          </PredictionProvider>
+        </NotificationProvider>
+      </PageLifecycleProvider>
+    </BrowserRouter>
   </StrictMode>
 );

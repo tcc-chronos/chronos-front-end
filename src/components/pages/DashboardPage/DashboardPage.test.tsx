@@ -1,40 +1,29 @@
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import { render } from '../../../test/test-utils';
 import { describe, it, expect } from 'vitest';
 import DashboardPage from './DashboardPage';
-import { SidebarProvider } from '../../../contexts/SidebarProvider';
-
-const DashboardPageWithProvider = () => (
-  <SidebarProvider>
-    <DashboardPage />
-  </SidebarProvider>
-);
 
 describe('DashboardPage', () => {
   it('renders main heading', () => {
-    render(<DashboardPageWithProvider />);
+    render(<DashboardPage />);
     expect(screen.getByText('Dashboard')).toBeInTheDocument();
   });
 
-  it('renders welcome message', () => {
-    render(<DashboardPageWithProvider />);
-    expect(
-      screen.getByText(/Bem-vindo ao painel principal/)
-    ).toBeInTheDocument();
+  it('renders line chart component', () => {
+    render(<DashboardPage />);
+    expect(screen.getByText('Sem dados para exibir')).toBeInTheDocument();
   });
 
-  it('renders simplified content', () => {
-    render(<DashboardPageWithProvider />);
-
-    // Verifica se o texto atualizado está presente
+  it('renders training metrics report', () => {
+    render(<DashboardPage />);
     expect(
-      screen.getByText(/Use a sidebar para visualizar as métricas/)
+      screen.getByRole('region', { name: 'Gráfico de previsão' })
     ).toBeInTheDocument();
   });
 
   it('does not render removed content', () => {
-    render(<DashboardPageWithProvider />);
+    render(<DashboardPage />);
 
-    // Verifica que o conteúdo removido não está mais presente
     expect(screen.queryByText('Analytics')).not.toBeInTheDocument();
     expect(screen.queryByText('Projetos')).not.toBeInTheDocument();
     expect(screen.queryByText('Relatórios')).not.toBeInTheDocument();
