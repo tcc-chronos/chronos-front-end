@@ -1,14 +1,17 @@
 export { Navigation } from './Navigation';
 export { SidebarItem } from './SidebarItem';
 export { SidebarContent } from './SidebarContent';
-export { AnalyticsSidebarContent } from './AnalyticsSidebarContent';
 export { BasicTrainingSidebarContent } from './BasicTrainingSidebarContent';
+export { default as DashboardSidebarContent } from './DashboardSidebarContent';
 export { DataTrainingSidebarContent } from './DataTrainingSidebarContent';
 export { RNNTrainingSidebarContent } from './RNNTrainingSidebarContent';
 export { SortableList } from './SortableList';
+export { default as InputField } from './InputField';
 export { NumberInputField } from './NumberInputField';
 export { SelectField } from './SelectField';
 export { default as ModelCard } from './ModelCard';
+export { default as SelectableTrainingCard } from './SelectableTrainingCard';
 export { default as TrainingCard } from './TrainingCard';
 export { ConfirmDeleteModal, NewTrainingModal } from './ModalsContainer';
+export { default as PredictButton } from './PredictButton';
 export { TrainingButton } from './TrainingButton';

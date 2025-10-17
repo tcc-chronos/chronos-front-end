@@ -82,8 +82,8 @@ const ModelsList: React.FC<ModelsListProps> = ({ className = '' }) => {
         modelId: null,
         modelName: '',
       });
-    } catch (error) {
-      console.error('Failed to delete model:', error);
+    } catch {
+      // Error handled by hook
     } finally {
       setActionLoading(prev => ({ ...prev, deletingModel: null }));
     }
@@ -118,8 +118,8 @@ const ModelsList: React.FC<ModelsListProps> = ({ className = '' }) => {
         modelId: null,
         modelName: '',
       });
-    } catch (error) {
-      console.error('Failed to delete training:', error);
+    } catch {
+      // Error handled by hook
     } finally {
       setActionLoading(prev => ({ ...prev, deletingTraining: null }));
     }
@@ -148,8 +148,8 @@ const ModelsList: React.FC<ModelsListProps> = ({ className = '' }) => {
         isOpen: false,
         model: null,
       });
-    } catch (error) {
-      console.error('Failed to create training:', error);
+    } catch {
+      // Error handled by hook
     } finally {
       setActionLoading(prev => ({ ...prev, creatingTraining: null }));
     }
@@ -158,8 +158,8 @@ const ModelsList: React.FC<ModelsListProps> = ({ className = '' }) => {
   const handleCopyParams = async (model: Model) => {
     try {
       await copyModelParams(model.id);
-    } catch (error) {
-      console.error('Failed to copy model params:', error);
+    } catch {
+      // Error handled by hook
     }
   };
 

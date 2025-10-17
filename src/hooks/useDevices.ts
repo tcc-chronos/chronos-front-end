@@ -65,7 +65,6 @@ export const useDevices = (
       const errorMessage =
         err instanceof Error ? err.message : 'Failed to fetch devices';
       setDevicesError(errorMessage);
-      console.warn('useDevices: Failed to fetch devices', err);
     } finally {
       setDevicesLoading(false);
     }

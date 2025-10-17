@@ -220,7 +220,7 @@ const RNNTrainingSidebarContent: React.FC<RNNTrainingSidebarContentProps> = ({
           onRemoveLayer={handleRemoveLayer}
         />
       </div>
-      <div className='fixed bottom-0 bg-white pb-2 border-gray-200 w-70'>
+      <div className='fixed bottom-0 bg-white border-t border-gray-200 w-70 py-4'>
         <TrainingButton variant='primary' fullWidth />
       </div>
     </SidebarContent>

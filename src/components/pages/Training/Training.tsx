@@ -11,11 +11,11 @@ import { useSidebar } from '../../../hooks/useSidebar';
 import { useModels } from '../../../hooks/useModels';
 
 const Training = () => {
-  const { addItem, clearItems } = useSidebar();
+  const { addItem, clearItemsPreservingActive } = useSidebar();
   const { isPolling } = useModels();
 
   useEffect(() => {
-    clearItems();
+    clearItemsPreservingActive();
 
     addItem({
       id: 'basic',
@@ -42,9 +42,9 @@ const Training = () => {
     });
 
     return () => {
-      clearItems();
+      clearItemsPreservingActive();
     };
-  }, [addItem, clearItems]);
+  }, [addItem, clearItemsPreservingActive]);
 
   return (
     <div className='space-y-6'>

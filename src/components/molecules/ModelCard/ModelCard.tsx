@@ -1,6 +1,7 @@
 import React from 'react';
 import { ChevronDown, ChevronUp, Copy, Trash2, Play } from 'lucide-react';
 import { IconButton } from '../../atoms';
+import { formatDateOnlyToBrazilTimezone } from '../../../utils';
 import TrainingCard from '../TrainingCard';
 import type { ModelCardProps } from './ModelCard.types';
 
@@ -14,11 +15,7 @@ const ModelCard: React.FC<ModelCardProps> = ({
   onDeleteTraining,
 }) => {
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    });
+    return formatDateOnlyToBrazilTimezone(dateString);
   };
 
   const getStatusColor = (status: string) => {
