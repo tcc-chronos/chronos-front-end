@@ -1,0 +1,55 @@
+{
+  "title": "Documentação do Chronos - Previsão de Séries Temporais com LSTM e GRU em Cidades Inteligentes",
+  "sections": [
+    {
+      "id": "introducao",
+      "title": "Introdução",
+      "content": "O conceito de **cidade inteligente** tem ganhado destaque por integrar urbanização, sustentabilidade e crescimento econômico de forma estratégica. As cidades inteligentes utilizam tecnologias emergentes como **IoT**, **Inteligência Artificial** e **Big Data** para enfrentar desafios modernos em áreas como mobilidade, saúde, segurança, infraestrutura e energia. Um dos principais ativos dessas tecnologias é a geração de dados no formato de **séries temporais**, que podem ser utilizados para previsão e tomada de decisão baseada em evidências."
+    },
+    {
+      "id": "objetivos",
+      "title": "Objetivos",
+      "content": "O objetivo principal deste projeto é desenvolver o Chronos, um componente modular e adaptável baseado em redes neurais **LSTM** e **GRU**, voltado à previsão de séries temporais em cidades inteligentes."
+    },
+    {
+      "id": "arquitetura-do-sistema",
+      "title": "Arquitetura do Sistema",
+      "content": "O Chronos é implementado como um Generic Enabler (GE) no ecossistema FIWARE. Ele é composto por:\n- Módulo de coleta de dados IoT.\n- Módulo de treinamento e predição com LSTM/GRU.\n- Interface visual para configuração e visualização de resultados.\n- APIs RESTful para integração com aplicações externas. A arquitetura foi pensada para permitir extensibilidade, modularidade e reutilização em diferentes contextos urbanos."
+    },
+    {
+      "id": "modelos-rnn",
+      "title": "Modelos de RNN Utilizados",
+      "content": "As redes neurais recorrentes **LSTM (Long Short-Term Memory)** e **GRU (Gated Recurrent Unit)** foram escolhidas por sua capacidade de lidar com **dependências temporais de longo prazo**, típicas em séries temporais urbanas.\n\nAmbas as arquiteturas são variações de **RNNs clássicas**, desenvolvidas para superar problemas de **desvanecimento do gradiente**, que ocorrem quando o modelo esquece informações importantes ao longo do tempo.\n\n- **LSTM:** introduz estruturas chamadas de *portas* (de entrada, esquecimento e saída), que controlam dinamicamente quais informações devem ser lembradas ou esquecidas em cada etapa da sequência. É mais flexível, porém mais complexa computacionalmente.\n- **GRU:** é uma versão simplificada do LSTM, com menos portas (atualização e reset). Costuma ter desempenho semelhante ao LSTM, com menor tempo de treinamento e menos parâmetros.\n\nEsses modelos são altamente indicados para **dados sensoriais de cidades inteligentes**, onde os padrões temporais variam e exigem que o modelo mantenha uma \"memória\" de eventos passados para fazer previsões mais precisas.\n\nA escolha entre LSTM e GRU pode depender do tempo de treinamento, da complexidade dos dados e do volume de memória disponível."
+    },
+    {
+      "id": "parametros-do-modelo",
+      "title": "Parâmetros do Modelo",
+      "content": "Os seguintes parâmetros devem ser definidos pelo usuário na configuração do modelo, e influenciam diretamente o desempenho, tempo de treinamento e capacidade preditiva:\n\n- `Tipo de RNN`: tipo de rede recorrente a ser usada. Pode ser `'lstm'` ou `'gru'`.\n- `Quantidade de épocas`: número de ciclos completos de treinamento. Quanto maior, maior o tempo de treinamento e, potencialmente, melhor a acurácia (com risco de overfitting).\n- `Target`: nome da coluna do CSV usada como alvo da predição. Define qual variável será aprendida pelo modelo.\n- `Janela de Previsão`: número de passos futuros a serem previstos. Impacta na dificuldade da tarefa de previsão (quanto mais passos, mais complexo).\n- `Janela de entrada`: número de passos anteriores usados como entrada. Define o tamanho da janela temporal que o modelo observa para prever o futuro.\n- `Multi feature`: se `true`, utiliza várias colunas (features) como entrada. Aumenta a dimensionalidade da entrada e pode melhorar resultados se bem calibrado.\n- `Taxa de aprendizado`: taxa de aprendizado. Define o quão rápido o modelo ajusta os pesos. Valores muito altos causam instabilidade; valores baixos tornam o aprendizado lento.\n- `Taxa de dropout`: taxa de desligamento de neurônios durante o treinamento, para evitar overfitting.\n- `Paciência de early stopping`: número de épocas consecutivas sem melhora que fazem o treinamento parar automaticamente. Ajuda a evitar overfitting.\n- `Configuração das camadas RNN`: número de unidades em cada camada RNN.\n- `Configuração das camadas Dense`: número de unidades nas camadas densas (fully connected) após a RNN. Pode estar vazia se não forem necessárias."
+    },
+    {
+      "id": "avaliacao-do-modelo",
+      "title": "Avaliação do Modelo",
+      "content": "A avaliação de modelos preditivos é essencial para medir sua eficácia e capacidade de generalização. No contexto de séries temporais, são utilizadas métricas específicas:\n\n- **MAE (Mean Absolute Error):** média dos erros absolutos entre as previsões e os valores reais. Mede a precisão geral das previsões. Valores menores indicam melhor desempenho.\n- **RMSE (Root Mean Squared Error):** raiz quadrada da média dos erros quadráticos. Penaliza erros maiores com mais severidade. Útil para detectar grandes desvios.\n\nEssas métricas devem ser analisadas em conjunto, pois fornecem diferentes perspectivas sobre o erro. A escolha depende do domínio do problema e da criticidade de erros grandes versus pequenos."
+    },
+    {
+      "id": "pre-processamento-dos-dados",
+      "title": "Pré-processamento dos Dados",
+      "content": "Durante o treinamento do modelo, o Chronos executa automaticamente todas as etapas de pré-processamento necessárias para preparar os dados de entrada.\n\nAs principais etapas são:\n\n- **Ordenação temporal:** os dados são ordenados pela coluna `timestamp` para garantir a coerência da sequência temporal.\n- **Tratamento de valores ausentes:** as colunas numéricas passam por interpolação temporal e preenchimento (forward/backward fill), garantindo que não haja `NaN` nos dados.\n- **Separação entre features e alvo:** se `multi_feature = true`, todas as colunas numéricas são consideradas como entrada; caso contrário, apenas a coluna de interesse (`Target`).\n- **Criação de janelas temporais:** os dados são organizados em sequências baseadas na `Janela de entrada`, que define quantos passos anteriores são usados para prever o próximo valor.\n- **Normalização (MinMaxScaler):** aplicada separadamente para entrada e saída, garantindo que cada variável esteja na mesma escala.\n- **Divisão em treino e teste:** feita de forma temporal (sem embaralhamento), preservando a sequência dos dados.\n\nEsse processo garante que os dados estejam limpos, organizados e adequadamente escalonados para o treinamento de redes neurais recorrentes."
+    },
+    {
+      "id": "boas-praticas",
+      "title": "Boas Práticas",
+      "content": "Para garantir o melhor desempenho e confiabilidade no uso do Chronos, recomenda-se seguir estas boas práticas:\n\n- **Ajuste da janela de entrada:** deve refletir o período necessário para capturar padrões temporais relevantes. Testar diferentes valores pode revelar o melhor desempenho para seu contexto.\n- **Evite overfitting:** utilize a taxa de dropout nas camadas recorrentes e densas, e configure paciência de early stopping para interromper o treino se não houver melhoria na validação.\n- **Cuidado com o Taxa de aprendizado:** valores muito altos podem causar instabilidade; valores muito baixos tornam o aprendizado lento. O padrão de 0.001 é um bom ponto de partida.\n- **Treinamento com multi_feature:** quando possível, usar múltiplas variáveis como entrada pode enriquecer o modelo, desde que essas variáveis estejam correlacionadas ao alvo.\n- **Avaliação com métricas adequadas:** MAE e RMSE são calculadas automaticamente após o treino e ajudam a comparar modelos.\n- **Reprodutibilidade e rastreabilidade:** o Chronos salva todos os metadados do modelo, incluindo escalonadores, parâmetros e tempo de treinamento, garantindo que o experimento possa ser reproduzido no futuro.\n- **Validação por domínio:** além das métricas, valide as previsões com especialistas da área ou com base em eventos conhecidos nos dados históricos.\n\nEssas práticas aumentam a robustez do modelo, reduzem riscos e facilitam a manutenção em ambientes de produção."
+    },
+    {
+      "id": "limitacoes",
+      "title": "Limitações",
+      "content": "O Chronos foi desenvolvido especificamente para o ecossistema FIWARE. A integração com outras arquiteturas não foi contemplada neste estudo. Além disso, o foco está em redes neurais LSTM e GRU, não sendo explorados algoritmos clássicos como ARIMA ou regressão linear. Essa escolha foi feita para explorar o potencial de modelos baseados em DL em ambientes urbanos com alta sensibilidade temporal."
+    },
+    {
+      "id": "conclusao",
+      "title": "Conclusão",
+      "content": "O Chronos representa um avanço significativo na integração de modelos de Deep Learning para previsão de séries temporais em cidades inteligentes. Sua arquitetura modular, aliada à capacidade preditiva de LSTM e GRU, contribui para decisões urbanas mais eficientes, baseadas em dados e previsões. Além de melhorar a governança urbana, o projeto promove o uso de tecnologias open-source como meio de democratização do acesso à inovação tecnológica em ambientes urbanos conectados."
+    }
+  ]
+}

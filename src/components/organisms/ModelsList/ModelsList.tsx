@@ -156,11 +156,7 @@ const ModelsList: React.FC<ModelsListProps> = ({ className = '' }) => {
   };
 
   const handleCopyParams = async (model: Model) => {
-    try {
-      await copyModelParams(model.id);
-    } catch {
-      // Error handled by hook
-    }
+    await copyModelParams(model.id).catch(() => {});
   };
 
   if (loading) {
@@ -174,7 +170,6 @@ const ModelsList: React.FC<ModelsListProps> = ({ className = '' }) => {
     );
   }
 
-  // Empty state
   if (models.length === 0) {
     return (
       <div className={`text-center py-12 ${className}`}>

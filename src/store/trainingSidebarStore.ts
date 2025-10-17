@@ -158,9 +158,7 @@ export const useTrainingSidebarStore = create<TrainingSidebarState>(
     },
     shouldFetchDevices: (): boolean => {
       const state = get();
-      // Don't fetch if already loading
       if (state.devicesLoading) return false;
-      // Don't fetch if there's data and it's fresh (within cache duration)
       if (
         state.devices.length > 0 &&
         state.devicesLastFetch &&
@@ -168,7 +166,6 @@ export const useTrainingSidebarStore = create<TrainingSidebarState>(
       ) {
         return false;
       }
-      // Fetch if no data or cache expired
       return true;
     },
     setModelTypes: (modelTypes: ModelType[]) => {
@@ -194,9 +191,7 @@ export const useTrainingSidebarStore = create<TrainingSidebarState>(
     },
     shouldFetchModelTypes: (): boolean => {
       const state = get();
-      // Don't fetch if already loading
       if (state.modelTypesLoading) return false;
-      // Don't fetch if there's data and it's fresh (within cache duration)
       if (
         state.modelTypes.length > 0 &&
         state.modelTypesLastFetch &&
@@ -204,7 +199,6 @@ export const useTrainingSidebarStore = create<TrainingSidebarState>(
       ) {
         return false;
       }
-      // Fetch if no data or cache expired
       return true;
     },
     isValid: (): boolean => {

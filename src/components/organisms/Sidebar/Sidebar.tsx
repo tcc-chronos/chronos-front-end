@@ -19,8 +19,7 @@ const Sidebar: React.FC<Partial<SidebarProps>> = ({
 
   const activeItem = items.find(item => item.id === activeItemId);
 
-  const baseClasses =
-    'h-full bg-white border-r border-gray-200 shadow-lg flex z-40';
+  const baseClasses = 'h-full bg-white border-r border-gray-200 flex z-40';
 
   return (
     <div
@@ -43,14 +42,11 @@ const Sidebar: React.FC<Partial<SidebarProps>> = ({
         ))}
       </div>
 
-      {activeItem && activeItem.content && activeItemId && (
-        <div
-          className='w-80 flex flex-col bg-white h-full transition-all duration-500 ease-in-out opacity-100 translate-x-0'
-          style={{ willChange: 'width, opacity, transform' }}
-        >
-          <div className='flex-1 overflow-y-auto'>{activeItem.content}</div>
-        </div>
-      )}
+      <div
+        className={`${activeItem && activeItem.content ? 'w-80' : 'w-0'} bg-white text-gray-700 transition-all duration-300 overflow-y-auto text-nowrap`}
+      >
+        {activeItem?.content}
+      </div>
     </div>
   );
 };
