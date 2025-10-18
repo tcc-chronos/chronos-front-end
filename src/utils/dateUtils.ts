@@ -15,7 +15,8 @@ export const formatDateToBrazilTimezone = (
   }
 ): string => {
   try {
-    const date = new Date(dateString);
+    const normalizedDateString = normalizeDateString(dateString);
+    const date = new Date(normalizedDateString);
 
     if (isNaN(date.getTime())) {
       return 'Data inválida';
@@ -64,7 +65,8 @@ export const formatDateOnlyToBrazilTimezone = (dateString: string): string => {
  */
 export const convertToSaoPauloTimezone = (dateString: string): Date => {
   try {
-    const date = new Date(dateString);
+    const normalizedDateString = normalizeDateString(dateString);
+    const date = new Date(normalizedDateString);
 
     if (isNaN(date.getTime())) {
       throw new Error(`Data inválida: ${dateString}`);
@@ -74,4 +76,16 @@ export const convertToSaoPauloTimezone = (dateString: string): Date => {
   } catch {
     return new Date();
   }
+};
+
+const normalizeDateString = (dateString: string): string => {
+  if (!dateString) return dateString;
+
+  const hasTimezone = /([zZ]|[+-]\d{2}:?\d{2})$/.test(dateString);
+
+  if (hasTimezone) {
+    return dateString;
+  }
+
+  return `${dateString}Z`;
 };
