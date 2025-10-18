@@ -45,7 +45,6 @@ export interface TrainingSidebarState {
   lookback_window: number;
   learning_rate: number;
   early_stopping_patience?: number;
-  multi_feature: boolean;
   rnn_units: LayerConfig[];
   dense_units: LayerConfig[];
   dense_activation: string;
@@ -107,7 +106,6 @@ const defaultValues: Omit<
   lookback_window: 60,
   learning_rate: 0.001,
   early_stopping_patience: 5,
-  multi_feature: false,
   rnn_units: [{ neurons: 128, dropout: 0.2 }],
   dense_units: [{ neurons: 64, dropout: 0.2 }],
   dense_activation: 'relu',

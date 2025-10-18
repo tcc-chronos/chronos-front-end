@@ -189,7 +189,6 @@ export const useModels = (): UseModelsReturn => {
           lookback_window: modelData.lookback_window,
           learning_rate: modelData.learning_rate,
           early_stopping_patience: modelData.early_stopping_patience,
-          multi_feature: false,
           batch_size: modelData.batch_size,
           rnn_units: modelData.rnn_layers.map(layer => ({
             neurons: layer.units,
