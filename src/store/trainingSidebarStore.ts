@@ -102,7 +102,7 @@ const defaultValues: Omit<
   entity_id: undefined,
   feature: undefined,
   column_data: '',
-  epochs: 1,
+  epochs: 10,
   forecast_horizon: 1,
   lookback_window: 60,
   learning_rate: 0.001,
