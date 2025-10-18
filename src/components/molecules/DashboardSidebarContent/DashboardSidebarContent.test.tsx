@@ -98,7 +98,7 @@ describe('DashboardSidebarContent', () => {
     render(<DashboardSidebarContent />);
     expect(
       screen.getByText(
-        'Nenhum modelo com treinamentos completos disponível para predição.'
+        'Nenhum modelo com treinamento completo disponível para predição.'
       )
     ).toBeInTheDocument();
   });
