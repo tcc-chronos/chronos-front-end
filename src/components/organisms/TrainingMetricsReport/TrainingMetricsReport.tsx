@@ -20,6 +20,9 @@ const TrainingMetricsReport: React.FC<TrainingMetricsReportProps> = ({
     total_points,
   } = metrics;
 
+  const formatVolume = (value?: number) =>
+    value !== undefined ? `${value.toLocaleString('pt-BR')} registros` : 'N/A';
+
   return (
     <div className={className}>
       <h2 className='text-xl font-semibold text-gray-900 mb-4'>
@@ -38,9 +41,7 @@ const TrainingMetricsReport: React.FC<TrainingMetricsReportProps> = ({
             <div className='flex items-center'>
               <span className='text-gray-600 font-medium mr-2'>Volume:</span>
               <span className='text-gray-800 font-semibold'>
-                {total_points || data_volume
-                  ? `${(total_points || data_volume)?.toLocaleString()} registros`
-                  : 'N/A'}
+                {formatVolume(total_points ?? data_volume)}
               </span>
             </div>
             <div className='flex items-center'>

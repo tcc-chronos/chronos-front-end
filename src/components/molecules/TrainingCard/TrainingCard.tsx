@@ -1,7 +1,10 @@
 import React from 'react';
 import { Trash2 } from 'lucide-react';
 import { IconButton } from '../../atoms';
-import { formatDateTimeToBrazilTimezone } from '../../../utils';
+import {
+  formatDateTimeToBrazilTimezone,
+  formatNumberToLocale,
+} from '../../../utils';
 import type { TrainingCardProps } from './TrainingCard.types';
 
 const TrainingCard: React.FC<TrainingCardProps> = ({ training, onDelete }) => {
@@ -47,7 +50,7 @@ const TrainingCard: React.FC<TrainingCardProps> = ({ training, onDelete }) => {
               Volume de dados
             </span>
             <span className='font-medium text-black text-sm'>
-              {training.dataVolume.toLocaleString()}
+              {formatNumberToLocale(training.dataVolume)}
             </span>
           </div>
           <div>

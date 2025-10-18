@@ -1,13 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import {
-  DefaultLayout,
-  Training,
-  NotFound,
-  DashboardPage,
-  Documentation,
-} from './components';
+import { DefaultLayout, Training, NotFound, DashboardPage } from './components';
 import {
   NotificationProvider,
   PredictionProvider,

@@ -10,3 +10,4 @@ export {
   formatDateOnlyToBrazilTimezone,
   convertToSaoPauloTimezone,
 } from './dateUtils';
+export { formatNumberToLocale } from './numberUtils';
