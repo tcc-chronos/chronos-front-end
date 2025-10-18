@@ -1,6 +1,6 @@
 import React from 'react';
 import { Trash2 } from 'lucide-react';
-import { IconButton } from '../../atoms';
+import { IconButton, Tooltip } from '../../atoms';
 import {
   formatDateTimeToBrazilTimezone,
   formatNumberToLocale,
@@ -71,13 +71,25 @@ const TrainingCard: React.FC<TrainingCardProps> = ({ training, onDelete }) => {
             <span className='text-gray-500 grid grid-cols-2 text-xs gap-3'>
               Status
             </span>
-            <span
-              className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                training.status
-              )}`}
-            >
-              {statusLabels[training.status] ?? training.status}
-            </span>
+            {training.status === 'failed' && training.error ? (
+              <Tooltip content={training.error}>
+                <span
+                  className={`inline-flex px-2 py-1 rounded-full text-xs font-medium cursor-help ${getStatusColor(
+                    training.status
+                  )}`}
+                >
+                  {statusLabels[training.status] ?? training.status}
+                </span>
+              </Tooltip>
+            ) : (
+              <span
+                className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                  training.status
+                )}`}
+              >
+                {statusLabels[training.status] ?? training.status}
+              </span>
+            )}
           </div>
         </div>
 

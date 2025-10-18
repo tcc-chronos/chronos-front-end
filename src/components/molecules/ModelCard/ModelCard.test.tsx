@@ -17,6 +17,7 @@ const mockModel: Model = {
       trainingDate: '2024-01-16T10:00:00Z',
       dataVolume: 1000,
       status: 'completed',
+      error: null,
       metrics: {
         mae: 0.1234,
         mse: 0.5678,
@@ -29,6 +30,7 @@ const mockModel: Model = {
       trainingDate: '2024-01-17T10:00:00Z',
       dataVolume: 2000,
       status: 'running',
+      error: null,
       metrics: {
         mae: 0,
         mse: 0,

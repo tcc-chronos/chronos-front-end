@@ -25,6 +25,7 @@ export class ModelsAdapter {
       id: apiTraining.id,
       trainingDate: apiTraining.created_at,
       dataVolume: apiTraining.total_data_points_collected || 0,
+      error: apiTraining.error,
       metrics: apiTraining.metrics
         ? ModelsAdapter.apiMetricsToLegacy(apiTraining.metrics)
         : {

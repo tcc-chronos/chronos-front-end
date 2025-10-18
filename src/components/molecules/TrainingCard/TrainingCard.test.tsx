@@ -8,6 +8,7 @@ const mockTraining: ModelTraining = {
   trainingDate: '2024-01-15T10:30:00Z',
   dataVolume: 5000,
   status: 'completed',
+  error: null,
   metrics: {
     mae: 0.1234,
     mse: 0.5678,
@@ -149,7 +150,7 @@ describe('TrainingCard', () => {
   it('applies correct status colors for failed', () => {
     render(
       <TrainingCard
-        training={{ ...mockTraining, status: 'failed' }}
+        training={{ ...mockTraining, status: 'failed', error: null }}
         modelId='model-1'
         onDelete={mockOnDelete}
       />
