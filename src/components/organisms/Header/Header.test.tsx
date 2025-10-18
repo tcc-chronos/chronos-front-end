@@ -5,9 +5,9 @@ import Header from './Header';
 import type { NavigationItem } from '../../molecules/Navigation/Navigation.types';
 
 const mockNavigationItems: NavigationItem[] = [
-  { label: 'Training', href: '/training' },
-  { label: 'Dashboard', href: '/dashboard' },
-  { label: 'Documentation', href: '/documentation' },
+  { label: 'Treinamentos', href: '/treinamentos' },
+  { label: 'Painel', href: '/painel' },
+  { label: 'Documentação', href: '/documentacao' },
 ];
 
 // Wrapper para React Router
@@ -19,17 +19,19 @@ describe('Header', () => {
   it('renders logo with Chronos text', () => {
     render(<Header />, { wrapper: RouterWrapper });
 
-    expect(screen.getByLabelText('Chronos Logo')).toBeInTheDocument();
+    expect(screen.getByLabelText('Logotipo Chronos')).toBeInTheDocument();
     expect(screen.getByText('Chronos')).toBeInTheDocument();
   });
 
   it('renders default navigation items when none provided', () => {
     render(<Header />, { wrapper: RouterWrapper });
 
-    expect(screen.getByRole('link', { name: 'Training' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Dashboard' })).toBeInTheDocument();
     expect(
-      screen.getByRole('link', { name: 'Documentation' })
+      screen.getByRole('link', { name: 'Treinamentos' })
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Painel' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Documentação' })
     ).toBeInTheDocument();
   });
 
@@ -38,10 +40,12 @@ describe('Header', () => {
       wrapper: RouterWrapper,
     });
 
-    expect(screen.getByRole('link', { name: 'Training' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Dashboard' })).toBeInTheDocument();
     expect(
-      screen.getByRole('link', { name: 'Documentation' })
+      screen.getByRole('link', { name: 'Treinamentos' })
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Painel' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Documentação' })
     ).toBeInTheDocument();
   });
 
@@ -55,7 +59,7 @@ describe('Header', () => {
   it('applies correct logo size', () => {
     render(<Header logoSize='lg' />, { wrapper: RouterWrapper });
 
-    const logo = screen.getByLabelText('Chronos Logo');
+    const logo = screen.getByLabelText('Logotipo Chronos');
     expect(logo).toHaveClass('h-10', 'w-10');
   });
 

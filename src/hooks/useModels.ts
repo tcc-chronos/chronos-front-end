@@ -270,7 +270,7 @@ export const useModels = (): UseModelsReturn => {
     onModelUpdate: handleModelUpdate,
     pollingInterval: 10000,
     enabled: hasActiveTrainings,
-    targetPage: '/', // Polling ativo na página Training
+    targetPage: '/treinamentos', // Polling ativo na página Treinamentos
   });
 
   useEffect(() => {

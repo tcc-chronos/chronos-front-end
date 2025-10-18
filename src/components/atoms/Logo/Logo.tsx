@@ -21,7 +21,7 @@ const Logo: React.FC<LogoProps> = ({
         viewBox='0 0 797 749'
         fill='none'
         xmlns='http://www.w3.org/2000/svg'
-        aria-label='Chronos Logo'
+        aria-label='Logotipo Chronos'
       >
         <circle cx='396' cy='358' r='350' fill='#0E5476' />
         <path

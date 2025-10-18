@@ -13,14 +13,28 @@ const TrainingCard: React.FC<TrainingCardProps> = ({ training, onDelete }) => {
   };
 
   const getStatusColor = (status: string) => {
-    const colors = {
+    const colors: Record<string, string> = {
       pending: 'bg-yellow-100 text-yellow-800',
       running: 'bg-blue-100 text-blue-800',
       completed: 'bg-green-100 text-green-800',
       failed: 'bg-red-100 text-red-800',
+      collecting_data: 'bg-yellow-100 text-yellow-800',
+      preprocessing: 'bg-yellow-100 text-yellow-800',
+      training: 'bg-blue-100 text-blue-800',
     };
-    return colors[status as keyof typeof colors] || colors.pending;
+    return colors[status] || colors.pending;
   };
+
+  const statusLabels: Record<TrainingCardProps['training']['status'], string> =
+    {
+      pending: 'Pendente',
+      running: 'Em execução',
+      completed: 'Concluído',
+      failed: 'Falhou',
+      collecting_data: 'Coletando dados',
+      preprocessing: 'Pré-processando',
+      training: 'Treinando',
+    };
 
   const formatMetric = (value: number) => {
     return value.toFixed(4);
@@ -62,7 +76,7 @@ const TrainingCard: React.FC<TrainingCardProps> = ({ training, onDelete }) => {
                 training.status
               )}`}
             >
-              {training.status}
+              {statusLabels[training.status] ?? training.status}
             </span>
           </div>
         </div>

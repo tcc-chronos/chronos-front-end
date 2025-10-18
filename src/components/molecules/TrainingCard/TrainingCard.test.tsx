@@ -34,7 +34,7 @@ describe('TrainingCard', () => {
 
     expect(screen.getByText(/15\/01\/2024/)).toBeInTheDocument();
     expect(screen.getByText('5.000')).toBeInTheDocument();
-    expect(screen.getByText('completed')).toBeInTheDocument();
+    expect(screen.getByText('Concluído')).toBeInTheDocument();
   });
 
   it('renders all metrics correctly', () => {
@@ -116,7 +116,7 @@ describe('TrainingCard', () => {
       />
     );
 
-    const statusBadge = screen.getByText('pending');
+    const statusBadge = screen.getByText('Pendente');
     expect(statusBadge).toHaveClass('bg-yellow-100', 'text-yellow-800');
   });
 
@@ -129,7 +129,7 @@ describe('TrainingCard', () => {
       />
     );
 
-    const statusBadge = screen.getByText('running');
+    const statusBadge = screen.getByText('Em execução');
     expect(statusBadge).toHaveClass('bg-blue-100', 'text-blue-800');
   });
 
@@ -142,7 +142,7 @@ describe('TrainingCard', () => {
       />
     );
 
-    const statusBadge = screen.getByText('completed');
+    const statusBadge = screen.getByText('Concluído');
     expect(statusBadge).toHaveClass('bg-green-100', 'text-green-800');
   });
 
@@ -155,7 +155,7 @@ describe('TrainingCard', () => {
       />
     );
 
-    const statusBadge = screen.getByText('failed');
+    const statusBadge = screen.getByText('Falhou');
     expect(statusBadge).toHaveClass('bg-red-100', 'text-red-800');
   });
 

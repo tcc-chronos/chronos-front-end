@@ -6,28 +6,28 @@ describe('Logo', () => {
   it('renders logo with text by default', () => {
     render(<Logo />);
 
-    expect(screen.getByLabelText('Chronos Logo')).toBeInTheDocument();
+    expect(screen.getByLabelText('Logotipo Chronos')).toBeInTheDocument();
     expect(screen.getByText('Chronos')).toBeInTheDocument();
   });
 
   it('renders logo without text when showText is false', () => {
     render(<Logo showText={false} />);
 
-    expect(screen.getByLabelText('Chronos Logo')).toBeInTheDocument();
+    expect(screen.getByLabelText('Logotipo Chronos')).toBeInTheDocument();
     expect(screen.queryByText('Chronos')).not.toBeInTheDocument();
   });
 
   it('applies correct size classes', () => {
     render(<Logo size='lg' />);
 
-    const logo = screen.getByLabelText('Chronos Logo');
+    const logo = screen.getByLabelText('Logotipo Chronos');
     expect(logo).toHaveClass('h-10', 'w-10');
   });
 
   it('applies custom className', () => {
     render(<Logo className='custom-class' />);
 
-    const container = screen.getByLabelText('Chronos Logo').parentElement;
+    const container = screen.getByLabelText('Logotipo Chronos').parentElement;
     expect(container).toHaveClass('custom-class');
   });
 

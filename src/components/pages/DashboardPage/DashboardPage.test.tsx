@@ -6,7 +6,7 @@ import DashboardPage from './DashboardPage';
 describe('DashboardPage', () => {
   it('renders main heading', () => {
     render(<DashboardPage />);
-    expect(screen.getByText('Dashboard')).toBeInTheDocument();
+    expect(screen.getByText('Painel')).toBeInTheDocument();
   });
 
   it('renders line chart component', () => {
@@ -24,7 +24,7 @@ describe('DashboardPage', () => {
   it('does not render removed content', () => {
     render(<DashboardPage />);
 
-    expect(screen.queryByText('Analytics')).not.toBeInTheDocument();
+    expect(screen.queryByText('Análises')).not.toBeInTheDocument();
     expect(screen.queryByText('Projetos')).not.toBeInTheDocument();
     expect(screen.queryByText('Relatórios')).not.toBeInTheDocument();
     expect(screen.queryByText('Como usar')).not.toBeInTheDocument();

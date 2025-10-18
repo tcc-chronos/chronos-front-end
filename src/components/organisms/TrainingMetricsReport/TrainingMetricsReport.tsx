@@ -61,7 +61,7 @@ const TrainingMetricsReport: React.FC<TrainingMetricsReportProps> = ({
             <p className='text-gray-600 font-bold text-xl mb-2'>
               MAE
               <span className='block text-xs font-normal text-gray-500 mt-1'>
-                Mean Absolute Error
+                Erro Absoluto Médio
               </span>
             </p>
             <p className='text-blue-600 font-bold text-4xl'>
@@ -77,7 +77,7 @@ const TrainingMetricsReport: React.FC<TrainingMetricsReportProps> = ({
               <p className='text-gray-600 font-bold text-xl mb-2'>
                 MSE
                 <span className='block text-xs font-normal text-gray-500 mt-1'>
-                  Mean Squared Error
+                  Erro Quadrático Médio
                 </span>
               </p>
               <p className='text-blue-600 font-bold text-4xl'>
@@ -93,7 +93,7 @@ const TrainingMetricsReport: React.FC<TrainingMetricsReportProps> = ({
             <p className='text-gray-600 font-bold text-xl mb-2'>
               RMSE
               <span className='block text-xs font-normal text-gray-500 mt-1'>
-                Root Mean Squared Error
+                Raiz do Erro Quadrático Médio
               </span>
             </p>
             <p className='text-blue-600 font-bold text-4xl'>
@@ -109,7 +109,7 @@ const TrainingMetricsReport: React.FC<TrainingMetricsReportProps> = ({
               <p className='text-gray-600 font-bold text-xl mb-2'>
                 Theil U
                 <span className='block text-xs font-normal text-gray-500 mt-1'>
-                  Theil Inequality Coefficient
+                  Coeficiente de Desigualdade de Theil
                 </span>
               </p>
               <p className='text-blue-600 font-bold text-4xl'>

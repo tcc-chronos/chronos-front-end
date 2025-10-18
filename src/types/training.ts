@@ -74,7 +74,14 @@ export interface ModelTraining {
   trainingDate: string;
   dataVolume: number;
   metrics: TrainingMetrics;
-  status: 'pending' | 'running' | 'completed' | 'failed';
+  status:
+    | 'pending'
+    | 'running'
+    | 'collecting_data'
+    | 'preprocessing'
+    | 'training'
+    | 'completed'
+    | 'failed';
 }
 
 export interface Model {
