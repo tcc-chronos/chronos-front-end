@@ -1,4 +1,6 @@
+import { type ReactNode } from 'react';
 import { type DocumentationSectionProps } from './DocumentationSection.types';
+import { parseDocumentationInline } from '../../../utils/documentationParser';
 
 /**
  * DocumentationSection Molecule
@@ -7,67 +9,118 @@ import { type DocumentationSectionProps } from './DocumentationSection.types';
 const DocumentationSection: React.FC<DocumentationSectionProps> = ({
   section,
 }) => {
-  /**
-   * Função para fazer parsing básico de texto com markdown
-   * Suporta: **texto em negrito** e `código inline`
-   */
-  const parseText = (text: string): React.ReactNode[] => {
-    return text.split(/(\*\*.*?\*\*|`.*?`)/g).map((part, idx) => {
-      // Negrito: **texto**
-      if (part.startsWith('**') && part.endsWith('**')) {
-        return (
-          <strong key={idx} className='font-semibold text-gray-900'>
-            {part.slice(2, -2)}
-          </strong>
-        );
-      }
-      // Código inline: `código`
-      if (part.startsWith('`') && part.endsWith('`')) {
-        return (
-          <code
-            key={idx}
-            className='px-1.5 py-0.5 rounded text-sm font-mono bg-gray-100 text-gray-800'
-          >
-            {part.slice(1, -1)}
-          </code>
-        );
-      }
-      return part;
-    });
-  };
-
-  /**
-   * Renderiza o conteúdo da seção, processando cada linha
-   */
-  const renderContent = () => {
+  // Renderização com suporte a listas agrupadas e títulos intermediários
+  const renderContent = (): ReactNode[] => {
     const lines = section.content.split('\n');
+    const elements: ReactNode[] = [];
+    let listBuffer: { type: 'ul' | 'ol'; items: string[] } | null = null;
+    let elementKey = 0;
 
-    return lines.map((line: string, index: number) => {
-      const trimmedLine = line.trim();
+    const nextKey = (prefix: string) =>
+      `${section.id}-${prefix}-${elementKey++}`;
 
-      // Lista (começa com "- ")
-      if (trimmedLine.startsWith('- ')) {
-        return (
-          <ul key={index} className='list-disc list-inside mb-2'>
-            <li className='text-gray-700'>
-              {parseText(trimmedLine.replace('- ', ''))}
-            </li>
+    const flushList = () => {
+      if (!listBuffer) return;
+
+      const items = listBuffer.items.map((item, idx) => (
+        <li key={`${section.id}-list-item-${idx}`}>
+          {parseDocumentationInline(item)}
+        </li>
+      ));
+
+      if (listBuffer.type === 'ol') {
+        elements.push(
+          <ol
+            key={nextKey('list')}
+            className='pl-5 list-decimal list-inside space-y-1 text-gray-700'
+          >
+            {items}
+          </ol>
+        );
+      } else {
+        elements.push(
+          <ul
+            key={nextKey('list')}
+            className='pl-5 list-disc list-inside space-y-1 text-gray-700'
+          >
+            {items}
           </ul>
         );
       }
 
-      // Linha vazia
+      listBuffer = null;
+    };
+
+    lines.forEach(rawLine => {
+      const line = rawLine.replace(/\r$/, '');
+      const trimmedLine = line.trim();
+
       if (trimmedLine === '') {
-        return <div key={index} className='h-2' />;
+        flushList();
+        return;
       }
 
-      // Parágrafo normal
-      return (
-        <p key={index} className='text-gray-700 mb-2'>
-          {parseText(trimmedLine)}
+      const unorderedMatch = trimmedLine.match(/^[-*]\s+(.+)/);
+      const orderedMatch = trimmedLine.match(/^\d+[.)]\s+(.+)/);
+
+      if (unorderedMatch || orderedMatch) {
+        const type: 'ul' | 'ol' = unorderedMatch ? 'ul' : 'ol';
+        const content = (unorderedMatch?.[1] ?? orderedMatch?.[1] ?? '').trim();
+
+        if (!listBuffer || listBuffer.type !== type) {
+          flushList();
+          listBuffer = { type, items: [] };
+        }
+
+        listBuffer.items.push(content);
+        return;
+      }
+
+      const headingMatch = trimmedLine.match(/^(#{2,4})\s+(.+)/);
+      if (headingMatch) {
+        flushList();
+        const [, hashes, headingText] = headingMatch;
+        const level = hashes.length;
+        const sizeClass =
+          level === 2 ? 'text-xl' : level === 3 ? 'text-lg' : 'text-base';
+
+        elements.push(
+          <h3
+            key={nextKey('heading')}
+            className={`${sizeClass} font-semibold text-gray-900 mt-4`}
+          >
+            {headingText}
+          </h3>
+        );
+        return;
+      }
+
+      const blockquoteMatch = trimmedLine.match(/^>\s+(.+)/);
+      if (blockquoteMatch) {
+        flushList();
+        elements.push(
+          <div
+            key={nextKey('blockquote')}
+            className='border-l-4 border-blue-200 bg-blue-50/60 text-gray-700 italic px-4 py-2 rounded'
+          >
+            {parseDocumentationInline(blockquoteMatch[1])}
+          </div>
+        );
+        return;
+      }
+
+      flushList();
+
+      elements.push(
+        <p key={nextKey('paragraph')} className='text-gray-700 leading-relaxed'>
+          {parseDocumentationInline(trimmedLine)}
         </p>
       );
     });
+
+    flushList();
+
+    return elements;
   };
 
   return (
@@ -75,7 +128,7 @@ const DocumentationSection: React.FC<DocumentationSectionProps> = ({
       <h2 className='text-2xl font-semibold mb-4 text-gray-900'>
         {section.title}
       </h2>
-      <div className='space-y-2'>{renderContent()}</div>
+      <div className='space-y-4'>{renderContent()}</div>
     </section>
   );
 };

@@ -1,6 +1,7 @@
 import { DocumentationSection } from '../../molecules/DocumentationSection';
 import { type DocumentationContentProps } from './DocumentationContent.types';
 import { type DocumentationSection as DocSection } from '../../../types';
+import { parseDocumentationInline } from '../../../utils/documentationParser';
 
 /**
  * DocumentationContent Organism
@@ -17,10 +18,11 @@ const DocumentationContent: React.FC<DocumentationContentProps> = ({
     >
       <div>
         <h1 className='text-3xl font-bold text-gray-900'>{data.title}</h1>
-        <p className='text-gray-600 mt-2 mb-8'>
-          Documentação completa sobre previsão de séries temporais com LSTM e
-          GRU em cidades inteligentes.
-        </p>
+        {data.description && (
+          <p className='text-gray-600 mt-2 mb-8 leading-relaxed'>
+            {parseDocumentationInline(data.description)}
+          </p>
+        )}
       </div>
       {data.sections.map((section: DocSection) => (
         <DocumentationSection key={section.id} section={section} />
