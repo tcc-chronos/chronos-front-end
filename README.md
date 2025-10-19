@@ -199,6 +199,21 @@ npm run build         # type-check + Vite build output in dist/
 npm run preview       # serve the production bundle locally
 ```
 
+### Container deployment
+
+The repository ships with a production-ready container image and Docker Compose stack.
+
+```bash
+# build and run with docker-compose (reads VITE_API_BASE_URL from your environment)
+docker-compose up --build
+
+# or build manually
+docker build -t chronos-frontend --build-arg VITE_API_BASE_URL=http://localhost:8000 .
+docker run -p 8080:80 chronos-frontend
+```
+
+Visit `http://localhost:8080` and proxy API requests to the host configured via `VITE_API_BASE_URL`. Adjust the value during `docker build` to target different Chronos backends.
+
 ## Quality Gates
 
 - `npm run lint` — ESLint (TypeScript-aware) aligned with `typescript-eslint`, React hooks linting, and Prettier for formatting guarantees.
