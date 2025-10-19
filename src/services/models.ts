@@ -1,5 +1,5 @@
 import { api } from './api';
-import type { ApiModel } from '../types/training';
+import type { ApiModel, ApiTraining } from '../types/training';
 import type { CreateModelPayload } from '../store/trainingSidebarStore';
 import type { DevicesResponse, ModelType } from '../types/api';
 import type { PredictionResponse } from '../types/prediction';
@@ -12,7 +12,20 @@ export class ModelsService {
   }
 
   static async getModel(id: string): Promise<ApiModel> {
-    return api.get<ApiModel>(`/models/${id}`);
+    const [model, trainings] = await Promise.all([
+      api.get<ApiModel>(`/models/${id}`),
+      ModelsService.getModelTrainings(id).catch(() => []),
+    ]);
+
+    const mergedTrainings = ModelsService.mergeTrainings(
+      model.trainings ?? [],
+      trainings
+    );
+
+    return {
+      ...model,
+      trainings: mergedTrainings,
+    };
   }
 
   static async createModel(modelData: CreateModelPayload): Promise<ApiModel> {
@@ -45,6 +58,31 @@ export class ModelsService {
     trainingId: string
   ): Promise<void> {
     return api.delete<void>(`/models/${modelId}/training-jobs/${trainingId}`);
+  }
+
+  static async getModelTrainings(modelId: string): Promise<ApiTraining[]> {
+    return api.get<ApiTraining[]>(`/models/${modelId}/training-jobs`);
+  }
+
+  private static mergeTrainings(
+    baseTrainings: ApiTraining[] = [],
+    detailTrainings: ApiTraining[] = []
+  ): ApiTraining[] {
+    const trainingsMap = new Map<string, ApiTraining>();
+
+    baseTrainings.forEach(training => {
+      trainingsMap.set(training.id, { ...training });
+    });
+
+    detailTrainings.forEach(training => {
+      const existing = trainingsMap.get(training.id);
+      trainingsMap.set(
+        training.id,
+        existing ? { ...existing, ...training } : { ...training }
+      );
+    });
+
+    return Array.from(trainingsMap.values());
   }
 
   static async predict(

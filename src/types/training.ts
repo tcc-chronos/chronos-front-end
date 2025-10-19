@@ -24,18 +24,32 @@ export interface ApiDenseLayer {
   activation: string;
 }
 
+export interface ApiTrainingHistory {
+  best_epoch: number;
+  epochs_trained: number;
+  history: {
+    loss: number[];
+    val_loss: number[];
+  };
+}
+
 export interface ApiTraining {
   id: string;
   status: 'pending' | 'running' | 'completed' | 'failed';
-  start_time: string;
-  end_time: string | null;
-  error: string | null;
-  data_collection_progress: number;
-  total_data_points_requested: number;
-  total_data_points_collected: number;
+  model_id: string;
+  start_time?: string;
+  end_time?: string | null;
+  error?: string | null;
+  data_collection_progress?: number;
+  total_data_points_requested?: number;
+  total_data_points_collected?: number;
   created_at: string;
-  updated_at: string;
-  metrics: ApiTrainingMetrics | null;
+  updated_at?: string;
+  metrics?: ApiTrainingMetrics | null;
+  metadata_artifact_id?: string | null;
+  training_history?: ApiTrainingHistory | null;
+  prediction_enabled?: boolean;
+  next_prediction_at?: string | null;
 }
 
 export interface ApiModel {
@@ -59,7 +73,7 @@ export interface ApiModel {
   entity_id: string;
   created_at: string;
   updated_at: string;
-  trainings: ApiTraining[];
+  trainings?: ApiTraining[];
 }
 
 export interface TrainingMetrics {
@@ -67,6 +81,13 @@ export interface TrainingMetrics {
   mse: number;
   rmse: number;
   theil_u: number;
+}
+
+export interface TrainingHistory {
+  bestEpoch: number;
+  epochsTrained: number;
+  loss: number[];
+  valLoss: number[];
 }
 
 export interface ModelTraining {
@@ -83,6 +104,9 @@ export interface ModelTraining {
     | 'training'
     | 'completed'
     | 'failed';
+  metadataArtifactId?: string | null;
+  configuredEpochs?: number | null;
+  trainingHistory?: TrainingHistory | null;
 }
 
 export interface Model {
@@ -93,6 +117,7 @@ export interface Model {
   device: string;
   attribute: string;
   status: string;
+  epochsConfigured?: number | null;
   trainings: ModelTraining[];
 }
 

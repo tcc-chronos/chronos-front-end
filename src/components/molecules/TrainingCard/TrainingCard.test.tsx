@@ -219,4 +219,78 @@ describe('TrainingCard', () => {
     const card = container.firstChild as HTMLElement;
     expect(card).toHaveClass('bg-gray-50', 'rounded-lg', 'p-4', 'border');
   });
+
+  it('renders details button when training has history and is completed', () => {
+    const trainingWithHistory: ModelTraining = {
+      ...mockTraining,
+      trainingHistory: {
+        bestEpoch: 5,
+        epochsTrained: 10,
+        loss: [0.5, 0.4],
+        valLoss: [0.45, 0.35],
+      },
+      configuredEpochs: 20,
+    };
+
+    render(
+      <TrainingCard
+        training={trainingWithHistory}
+        modelId='model-1'
+        onDelete={mockOnDelete}
+      />
+    );
+
+    expect(
+      screen.getByLabelText('Ver detalhes do treinamento')
+    ).toBeInTheDocument();
+  });
+
+  it('does not render details button when training has no history', () => {
+    render(
+      <TrainingCard
+        training={{ ...mockTraining, trainingHistory: undefined }}
+        modelId='model-1'
+        onDelete={mockOnDelete}
+      />
+    );
+
+    expect(
+      screen.queryByLabelText('Ver detalhes do treinamento')
+    ).not.toBeInTheDocument();
+  });
+
+  it('opens details modal with metadata when details button is clicked', () => {
+    const trainingWithHistory: ModelTraining = {
+      ...mockTraining,
+      trainingHistory: {
+        bestEpoch: 3,
+        epochsTrained: 8,
+        loss: [0.4, 0.3, 0.2],
+        valLoss: [0.5, 0.35, 0.25],
+      },
+      configuredEpochs: 15,
+    };
+
+    render(
+      <TrainingCard
+        training={trainingWithHistory}
+        modelId='model-1'
+        onDelete={mockOnDelete}
+      />
+    );
+
+    const detailsButton = screen.getByLabelText('Ver detalhes do treinamento');
+    fireEvent.click(detailsButton);
+
+    expect(screen.getByText('Metadados do treinamento')).toBeInTheDocument();
+    expect(screen.getByText('Épocas configuradas')).toBeInTheDocument();
+    expect(screen.getByText('Épocas treinadas')).toBeInTheDocument();
+    expect(screen.getByText('Melhor época')).toBeInTheDocument();
+    expect(screen.getByText('15')).toBeInTheDocument();
+    expect(screen.getByText('8')).toBeInTheDocument();
+    expect(screen.getByText('3')).toBeInTheDocument();
+    expect(
+      screen.getByText('Evolução das perdas', { exact: false })
+    ).toBeInTheDocument();
+  });
 });

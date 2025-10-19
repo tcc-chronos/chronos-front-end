@@ -54,7 +54,17 @@ const sharedFetchModels = async (
   fetchPromise = (async () => {
     try {
       const apiModels = await ModelsService.getModels();
-      sharedModels = apiModels.map(ModelsAdapter.apiModelToLegacy);
+      const modelsWithTrainings = await Promise.all(
+        apiModels.map(async apiModel => {
+          const trainings = await ModelsService.getModelTrainings(
+            apiModel.id
+          ).catch(() => apiModel.trainings ?? []);
+
+          return ModelsAdapter.apiModelToLegacy(apiModel, trainings);
+        })
+      );
+
+      sharedModels = modelsWithTrainings;
       sharedError = null;
       lastFetchTime = Date.now();
     } catch (err) {
