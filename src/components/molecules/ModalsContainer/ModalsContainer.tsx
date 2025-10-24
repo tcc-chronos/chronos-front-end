@@ -1,7 +1,21 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import {
+  ResponsiveContainer,
+  LineChart as RechartsLineChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  Line,
+} from 'recharts';
 import { Modal, Button } from '../../atoms';
 import { NumberInputField } from '../NumberInputField';
-import type { TrainingFormData } from '../../../types/training';
+import type {
+  TrainingFormData,
+  ModelTraining,
+  TrainingHistory,
+} from '../../../types/training';
 
 interface ConfirmDeleteModalProps {
   isOpen: boolean;
@@ -141,4 +155,151 @@ const NewTrainingModal: React.FC<NewTrainingModalProps> = ({
   );
 };
 
-export { ConfirmDeleteModal, NewTrainingModal };
+interface TrainingDetailsModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  training: ModelTraining | null;
+}
+
+const createChartData = (history: TrainingHistory | null | undefined) => {
+  if (!history) return [];
+
+  const maxLength = Math.max(history.loss.length, history.valLoss.length);
+
+  return Array.from({ length: maxLength }, (_, index) => ({
+    epoch: index + 1,
+    loss: history.loss[index] ?? null,
+    valLoss: history.valLoss[index] ?? null,
+  }));
+};
+
+const TrainingDetailsModal: React.FC<TrainingDetailsModalProps> = ({
+  isOpen,
+  onClose,
+  training,
+}) => {
+  const chartData = useMemo(
+    () => createChartData(training?.trainingHistory),
+    [training]
+  );
+
+  const hasHistory = chartData.length > 0;
+
+  if (!training) {
+    return null;
+  }
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title='Detalhes do treinamento'
+      size='xl'
+      preventCloseOnOverlay={false}
+    >
+      <div className='space-y-6'>
+        <div>
+          <h3 className='text-sm font-semibold uppercase text-gray-500 tracking-wide'>
+            Metadados do treinamento
+          </h3>
+          <div className='mt-3 grid grid-cols-1 sm:grid-cols-3 gap-3'>
+            <div className='border border-gray-200 rounded-lg p-4 bg-gray-50'>
+              <span className='text-xs text-gray-500 block'>
+                Épocas configuradas
+              </span>
+              <span className='text-lg font-semibold text-gray-900'>
+                {training.configuredEpochs ?? '—'}
+              </span>
+            </div>
+            <div className='border border-gray-200 rounded-lg p-4 bg-gray-50'>
+              <span className='text-xs text-gray-500 block'>
+                Épocas treinadas
+              </span>
+              <span className='text-lg font-semibold text-gray-900'>
+                {training.trainingHistory?.epochsTrained ?? '—'}
+              </span>
+            </div>
+            <div className='border border-gray-200 rounded-lg p-4 bg-gray-50'>
+              <span className='text-xs text-gray-500 block'>Melhor época</span>
+              <span className='text-lg font-semibold text-gray-900'>
+                {training.trainingHistory?.bestEpoch ?? '—'}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 className='text-sm font-semibold uppercase text-gray-500 tracking-wide mb-3'>
+            Evolução das perdas
+          </h3>
+          <div className='bg-white border border-gray-200 rounded-lg p-4 h-[360px]'>
+            {hasHistory ? (
+              <ResponsiveContainer width='100%' height='100%'>
+                <RechartsLineChart data={chartData}>
+                  <CartesianGrid strokeDasharray='3 3' />
+                  <XAxis dataKey='epoch' />
+                  <YAxis tickFormatter={value => Number(value).toFixed(3)} />
+                  <Tooltip
+                    formatter={(rawValue, dataKey) => {
+                      const label = dataKey === 'loss' ? 'Loss' : 'Val Loss';
+
+                      if (rawValue === null || rawValue === undefined) {
+                        return ['—', label];
+                      }
+
+                      const numericValue =
+                        typeof rawValue === 'number'
+                          ? rawValue
+                          : Number(rawValue);
+
+                      if (!Number.isFinite(numericValue)) {
+                        return ['—', label];
+                      }
+
+                      return [numericValue.toFixed(4), label];
+                    }}
+                    labelFormatter={label => `Época ${label}`}
+                  />
+                  <Legend
+                    formatter={value =>
+                      value === 'loss' ? 'Loss' : 'Val Loss'
+                    }
+                  />
+                  <Line
+                    type='monotone'
+                    dataKey='loss'
+                    stroke='#2563eb'
+                    strokeWidth={2}
+                    dot={false}
+                    isAnimationActive={false}
+                  />
+                  <Line
+                    type='monotone'
+                    dataKey='valLoss'
+                    stroke='#16a34a'
+                    strokeWidth={2}
+                    dot={false}
+                    isAnimationActive={false}
+                  />
+                </RechartsLineChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className='h-full flex items-center justify-center text-gray-500 text-sm text-center px-6'>
+                Gráfico indisponível. Este treinamento não possui histórico de
+                loss/val_loss fornecido pelo serviço.
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className='flex justify-end'>
+          <Button variant='secondary' onClick={onClose}>
+            Fechar
+          </Button>
+        </div>
+      </div>
+    </Modal>
+  );
+};
+
+export { ConfirmDeleteModal, NewTrainingModal, TrainingDetailsModal };

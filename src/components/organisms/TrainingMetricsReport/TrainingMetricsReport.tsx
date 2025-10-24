@@ -20,6 +20,9 @@ const TrainingMetricsReport: React.FC<TrainingMetricsReportProps> = ({
     total_points,
   } = metrics;
 
+  const formatVolume = (value?: number) =>
+    value !== undefined ? `${value.toLocaleString('pt-BR')} registros` : 'N/A';
+
   return (
     <div className={className}>
       <h2 className='text-xl font-semibold text-gray-900 mb-4'>
@@ -38,9 +41,7 @@ const TrainingMetricsReport: React.FC<TrainingMetricsReportProps> = ({
             <div className='flex items-center'>
               <span className='text-gray-600 font-medium mr-2'>Volume:</span>
               <span className='text-gray-800 font-semibold'>
-                {total_points || data_volume
-                  ? `${(total_points || data_volume)?.toLocaleString()} registros`
-                  : 'N/A'}
+                {formatVolume(total_points ?? data_volume)}
               </span>
             </div>
             <div className='flex items-center'>
@@ -60,7 +61,7 @@ const TrainingMetricsReport: React.FC<TrainingMetricsReportProps> = ({
             <p className='text-gray-600 font-bold text-xl mb-2'>
               MAE
               <span className='block text-xs font-normal text-gray-500 mt-1'>
-                Mean Absolute Error
+                Erro Absoluto Médio
               </span>
             </p>
             <p className='text-blue-600 font-bold text-4xl'>
@@ -76,7 +77,7 @@ const TrainingMetricsReport: React.FC<TrainingMetricsReportProps> = ({
               <p className='text-gray-600 font-bold text-xl mb-2'>
                 MSE
                 <span className='block text-xs font-normal text-gray-500 mt-1'>
-                  Mean Squared Error
+                  Erro Quadrático Médio
                 </span>
               </p>
               <p className='text-blue-600 font-bold text-4xl'>
@@ -92,7 +93,7 @@ const TrainingMetricsReport: React.FC<TrainingMetricsReportProps> = ({
             <p className='text-gray-600 font-bold text-xl mb-2'>
               RMSE
               <span className='block text-xs font-normal text-gray-500 mt-1'>
-                Root Mean Squared Error
+                Raiz do Erro Quadrático Médio
               </span>
             </p>
             <p className='text-blue-600 font-bold text-4xl'>
@@ -108,7 +109,7 @@ const TrainingMetricsReport: React.FC<TrainingMetricsReportProps> = ({
               <p className='text-gray-600 font-bold text-xl mb-2'>
                 Theil U
                 <span className='block text-xs font-normal text-gray-500 mt-1'>
-                  Theil Inequality Coefficient
+                  Coeficiente de Desigualdade de Theil
                 </span>
               </p>
               <p className='text-blue-600 font-bold text-4xl'>

@@ -215,13 +215,13 @@ const DashboardSidebarContent: React.FC<DashboardSidebarContentProps> = ({
           leftIcon={<Search size={16} />}
         />
 
-        <div className='space-y-3 max-h-[calc(100vh-290px)] overflow-y-auto'>
+        <div className='space-y-3 max-h-[calc(100vh-290px)] overflow-y-auto overflow-x-clip'>
           {filteredModels.length === 0 ? (
-            <div className='text-center py-8 text-gray-500 text-sm'>
+            <p className='text-center py-8 text-gray-500 text-sm whitespace-normal break-words w-full'>
               {searchQuery
-                ? 'Nenhum modelo com treinamentos completos encontrado com este filtro.'
-                : 'Nenhum modelo com treinamentos completos disponível para predição.'}
-            </div>
+                ? 'Nenhum modelo com treinamento completo encontrado com este filtro.'
+                : 'Nenhum modelo com treinamento completo disponível para predição.'}
+            </p>
           ) : (
             filteredModels.map(model => {
               const isExpanded = expandedModels.has(model.id);

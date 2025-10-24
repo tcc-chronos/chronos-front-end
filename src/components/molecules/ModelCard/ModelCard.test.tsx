@@ -17,6 +17,7 @@ const mockModel: Model = {
       trainingDate: '2024-01-16T10:00:00Z',
       dataVolume: 1000,
       status: 'completed',
+      error: null,
       metrics: {
         mae: 0.1234,
         mse: 0.5678,
@@ -29,6 +30,7 @@ const mockModel: Model = {
       trainingDate: '2024-01-17T10:00:00Z',
       dataVolume: 2000,
       status: 'running',
+      error: null,
       metrics: {
         mae: 0,
         mse: 0,
@@ -67,7 +69,7 @@ describe('ModelCard', () => {
     expect(screen.getByText('LSTM')).toBeInTheDocument();
     expect(screen.getByText('sensor-123')).toBeInTheDocument();
     expect(screen.getByText('temperature')).toBeInTheDocument();
-    expect(screen.getByText('idle')).toBeInTheDocument();
+    expect(screen.getByText('Inativo')).toBeInTheDocument();
   });
 
   it('formats date correctly', () => {
@@ -240,7 +242,7 @@ describe('ModelCard', () => {
       />
     );
 
-    let statusBadge = screen.getByText('idle');
+    let statusBadge = screen.getByText('Inativo');
     expect(statusBadge).toHaveClass('bg-gray-100', 'text-gray-800');
 
     rerender(
@@ -254,7 +256,7 @@ describe('ModelCard', () => {
       />
     );
 
-    statusBadge = screen.getByText('training');
+    statusBadge = screen.getByText('Treinando');
     expect(statusBadge).toHaveClass('bg-blue-100', 'text-blue-800');
 
     rerender(
@@ -268,7 +270,7 @@ describe('ModelCard', () => {
       />
     );
 
-    statusBadge = screen.getByText('completed');
+    statusBadge = screen.getByText('Concluído');
     expect(statusBadge).toHaveClass('bg-green-100', 'text-green-800');
 
     rerender(
@@ -282,7 +284,7 @@ describe('ModelCard', () => {
       />
     );
 
-    statusBadge = screen.getByText('error');
+    statusBadge = screen.getByText('Erro');
     expect(statusBadge).toHaveClass('bg-red-100', 'text-red-800');
   });
 

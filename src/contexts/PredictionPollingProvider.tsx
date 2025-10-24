@@ -110,7 +110,7 @@ export const PredictionPollingProvider: React.FC<
 
   // Controlar polling baseado na página ativa
   useEffect(() => {
-    const isDashboardActive = isPageActive('/dashboard');
+    const isDashboardActive = isPageActive('/painel');
 
     if (!isDashboardActive && isPolling) {
       stopPolling();

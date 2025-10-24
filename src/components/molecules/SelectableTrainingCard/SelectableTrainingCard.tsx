@@ -1,6 +1,9 @@
 import React from 'react';
 import { Check } from 'lucide-react';
-import { formatDateTimeToBrazilTimezone } from '../../../utils';
+import {
+  formatDateTimeToBrazilTimezone,
+  formatNumberToLocale,
+} from '../../../utils';
 import type { SelectableTrainingCardProps } from './SelectableTrainingCard.types';
 
 const SelectableTrainingCard: React.FC<SelectableTrainingCardProps> = ({
@@ -65,7 +68,7 @@ const SelectableTrainingCard: React.FC<SelectableTrainingCardProps> = ({
             {formatDate(training.trainingDate)}
           </span>
           <span className='text-xs text-gray-500 mt-1'>
-            Volume de dados: {training.dataVolume.toLocaleString()}
+            Volume de dados: {formatNumberToLocale(training.dataVolume)}
           </span>
         </div>
       </div>

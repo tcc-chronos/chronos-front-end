@@ -6,5 +6,6 @@ export interface DocumentationSection {
 
 export interface DocumentationData {
   title: string;
+  description?: string;
   sections: DocumentationSection[];
 }

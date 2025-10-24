@@ -19,13 +19,26 @@ const ModelCard: React.FC<ModelCardProps> = ({
   };
 
   const getStatusColor = (status: string) => {
-    const colors = {
+    const colors: Record<string, string> = {
       idle: 'bg-gray-100 text-gray-800',
+      draft: 'bg-gray-100 text-gray-800',
       training: 'bg-blue-100 text-blue-800',
       completed: 'bg-green-100 text-green-800',
+      trained: 'bg-green-100 text-green-800',
+      created: 'bg-gray-100 text-gray-800',
       error: 'bg-red-100 text-red-800',
     };
-    return colors[status as keyof typeof colors] || colors.idle;
+    return colors[status] || colors.idle;
+  };
+
+  const statusLabels: Record<string, string> = {
+    idle: 'Inativo',
+    draft: 'Rascunho',
+    training: 'Treinando',
+    completed: 'Concluído',
+    trained: 'Treinado',
+    created: 'Criado',
+    error: 'Erro',
   };
 
   const isTraining = model.status === 'training';
@@ -75,7 +88,7 @@ const ModelCard: React.FC<ModelCardProps> = ({
                     model.status
                   )}`}
                 >
-                  {model.status}
+                  {statusLabels[model.status] ?? model.status}
                 </span>
               </div>
             </div>

@@ -16,15 +16,22 @@ const NumberInput: React.FC<NumberInputProps> = ({
   ...props
 }) => {
   const [internalValue, setInternalValue] = useState<string>('');
+  const [isFocused, setIsFocused] = useState<boolean>(false);
+
+  const { onBlur: userOnBlur, onFocus: userOnFocus, ...restProps } = props;
 
   // Sincronizar valor interno com prop externa
   useEffect(() => {
+    if (isFocused) {
+      return;
+    }
+
     if (value !== undefined && value !== '') {
       setInternalValue(String(value));
     } else {
       setInternalValue('');
     }
-  }, [value]);
+  }, [value, isFocused]);
 
   const formatNumber = useCallback(
     (num: number): string => {
@@ -93,19 +100,39 @@ const NumberInput: React.FC<NumberInputProps> = ({
     [allowNegative, parseInput, onChange]
   );
 
-  const handleBlur = useCallback(() => {
-    const parsedValue = parseInput(internalValue);
+  const handleFocus = useCallback(
+    (event: React.FocusEvent<HTMLInputElement>) => {
+      setIsFocused(true);
+      userOnFocus?.(event);
+    },
+    [userOnFocus]
+  );
 
-    if (parsedValue !== undefined && validateNumber(parsedValue)) {
-      // Formatar o número no blur para exibição limpa
-      const formattedValue = formatNumber(parsedValue);
-      setInternalValue(formattedValue);
-      onChange?.(parseFloat(formattedValue));
-    } else if (internalValue && parsedValue !== undefined) {
-      // Se o número não é válido pelas regras de min/max, mas é um número válido
-      setInternalValue(internalValue);
-    }
-  }, [internalValue, parseInput, validateNumber, formatNumber, onChange]);
+  const handleBlur = useCallback(
+    (event: React.FocusEvent<HTMLInputElement>) => {
+      setIsFocused(false);
+      const parsedValue = parseInput(internalValue);
+
+      if (parsedValue !== undefined && validateNumber(parsedValue)) {
+        // Formatar o número no blur para exibição limpa
+        const formattedValue = formatNumber(parsedValue);
+        setInternalValue(formattedValue);
+        onChange?.(parseFloat(formattedValue));
+      } else if (internalValue && parsedValue !== undefined) {
+        // Se o número não é válido pelas regras de min/max, mas é um número válido
+        setInternalValue(internalValue);
+      }
+      userOnBlur?.(event);
+    },
+    [
+      internalValue,
+      parseInput,
+      validateNumber,
+      formatNumber,
+      onChange,
+      userOnBlur,
+    ]
+  );
 
   const getBaseClasses = () => {
     return 'w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary-medium focus:border-brand-primary-medium disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed';
@@ -134,11 +161,12 @@ const NumberInput: React.FC<NumberInputProps> = ({
       inputMode='decimal'
       value={internalValue}
       onChange={handleInputChange}
+      onFocus={handleFocus}
       onBlur={handleBlur}
       disabled={disabled}
       placeholder={placeholder}
       className={`${getBaseClasses()} ${getSizeClasses()} ${getVariantClasses()} ${className}`}
-      {...props}
+      {...restProps}
     />
   );
 };

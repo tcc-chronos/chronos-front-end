@@ -15,7 +15,7 @@ const DocumentationLink: React.FC<DocumentationLinkProps> = ({
       className={`
         block px-4 py-2 rounded-md border-l-4 text-sm
         transition-all duration-200 ease-in-out
-        hover:translate-x-1
+        hover:translate-x-1 truncate
         ${
           isActive
             ? 'border-blue-600 bg-blue-50 text-blue-900 font-medium'

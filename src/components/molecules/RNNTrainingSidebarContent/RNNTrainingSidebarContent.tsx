@@ -25,7 +25,7 @@ const RNNTrainingSidebarContent: React.FC<RNNTrainingSidebarContentProps> = ({
 }) => {
   const { rnn_units, dense_units, setField } = useTrainingSidebarStore();
 
-  const [neurons, setNeurons] = useState<number | undefined>(undefined);
+  const [neurons, setNeurons] = useState<number | undefined>(128);
   const [dropout, setDropout] = useState<number | undefined>(0.2);
   const [layerType, setLayerType] = useState<'RNN' | 'Dense' | ''>('');
   const [errors, setErrors] = useState<ValidationErrors>({});
@@ -115,7 +115,7 @@ const RNNTrainingSidebarContent: React.FC<RNNTrainingSidebarContentProps> = ({
     }
 
     // Reset form
-    setNeurons(undefined);
+    setNeurons(128);
     setDropout(0.2);
     setLayerType('');
     setErrors({});

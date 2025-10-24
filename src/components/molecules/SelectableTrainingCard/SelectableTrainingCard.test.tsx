@@ -8,6 +8,7 @@ const mockTraining: ModelTraining = {
   trainingDate: '2024-01-01T12:00:00Z',
   dataVolume: 1000,
   status: 'completed',
+  error: null,
   metrics: {
     mae: 0.1234,
     mse: 0.5678,

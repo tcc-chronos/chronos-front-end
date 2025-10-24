@@ -1,8 +1,8 @@
-const API_BASE_URL = 'http://localhost:8000';
+import { env } from '../config/env';
 
 export const api = {
   get: async <T>(endpoint: string): Promise<T> => {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const response = await fetch(`${env.apiBaseUrl}${endpoint}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -17,7 +17,7 @@ export const api = {
   },
 
   post: async <T>(endpoint: string, data?: unknown): Promise<T> => {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const response = await fetch(`${env.apiBaseUrl}${endpoint}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -49,7 +49,7 @@ export const api = {
   },
 
   put: async <T>(endpoint: string, data?: unknown): Promise<T> => {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const response = await fetch(`${env.apiBaseUrl}${endpoint}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -65,7 +65,7 @@ export const api = {
   },
 
   delete: async <T>(endpoint: string): Promise<T> => {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const response = await fetch(`${env.apiBaseUrl}${endpoint}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

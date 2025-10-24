@@ -1,1 +1,5 @@
-export { ConfirmDeleteModal, NewTrainingModal } from './ModalsContainer';
+export {
+  ConfirmDeleteModal,
+  NewTrainingModal,
+  TrainingDetailsModal,
+} from './ModalsContainer';

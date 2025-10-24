@@ -60,7 +60,7 @@ const Training = () => {
         </div>
         <p className='text-gray-600 mt-2'>
           Gerencie seus modelos de rede neural e configure novos treinamentos.
-          Use a sidebar para configurar os parâmetros dos seus modelos.
+          Use o menu lateral para configurar os parâmetros dos seus modelos.
         </p>
       </div>
 

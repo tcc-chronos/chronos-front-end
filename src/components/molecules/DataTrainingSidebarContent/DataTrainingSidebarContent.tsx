@@ -19,7 +19,7 @@ const DataTrainingSidebarContent: React.FC<DataTrainingSidebarContentProps> = ({
     lookback_window,
     learning_rate,
     early_stopping_patience,
-    epochs = 1,
+    epochs,
     forecast_horizon = 1,
     setField,
   } = useTrainingSidebarStore();
@@ -56,7 +56,7 @@ const DataTrainingSidebarContent: React.FC<DataTrainingSidebarContentProps> = ({
     }));
   };
   const handleLearningRateChange = (value: number | undefined) => {
-    setField('learning_rate', value ?? 0.001);
+    setField('learning_rate', value);
     setErrors(prev => ({
       ...prev,
       learning_rate: validateLearningRate(value),
@@ -70,7 +70,7 @@ const DataTrainingSidebarContent: React.FC<DataTrainingSidebarContentProps> = ({
     }));
   };
   const handleEpochsChange = (value: number | undefined) => {
-    setField('epochs', value ?? 1);
+    setField('epochs', value);
     setErrors(prev => ({
       ...prev,
       epochs: validateEpochs(value),
@@ -99,7 +99,7 @@ const DataTrainingSidebarContent: React.FC<DataTrainingSidebarContentProps> = ({
           onChange={handleLookbackWindowChange}
           min={1}
           decimalPlaces={0}
-          placeholder='1'
+          placeholder='60'
           error={errors.lookback_window}
           infoTooltip='Janela de entrada para os dados.'
           required
@@ -123,7 +123,7 @@ const DataTrainingSidebarContent: React.FC<DataTrainingSidebarContentProps> = ({
           onChange={handleEpochsChange}
           min={1}
           decimalPlaces={0}
-          placeholder='1'
+          placeholder='10'
           error={errors.epochs}
           infoTooltip='Número de épocas para o treinamento.'
           required

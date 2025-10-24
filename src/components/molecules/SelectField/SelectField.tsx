@@ -69,7 +69,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
       {error && (
         <p
           id={`${id}-error`}
-          className='text-sm text-feedback-danger-medium flex items-center gap-1'
+          className='text-sm text-feedback-danger-medium flex items-center gap-1 text-wrap'
           role='alert'
         >
           <Icon name='error' size='sm' />

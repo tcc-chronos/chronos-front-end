@@ -54,7 +54,17 @@ const sharedFetchModels = async (
   fetchPromise = (async () => {
     try {
       const apiModels = await ModelsService.getModels();
-      sharedModels = apiModels.map(ModelsAdapter.apiModelToLegacy);
+      const modelsWithTrainings = await Promise.all(
+        apiModels.map(async apiModel => {
+          const trainings = await ModelsService.getModelTrainings(
+            apiModel.id
+          ).catch(() => apiModel.trainings ?? []);
+
+          return ModelsAdapter.apiModelToLegacy(apiModel, trainings);
+        })
+      );
+
+      sharedModels = modelsWithTrainings;
       sharedError = null;
       lastFetchTime = Date.now();
     } catch (err) {
@@ -189,7 +199,6 @@ export const useModels = (): UseModelsReturn => {
           lookback_window: modelData.lookback_window,
           learning_rate: modelData.learning_rate,
           early_stopping_patience: modelData.early_stopping_patience,
-          multi_feature: false,
           batch_size: modelData.batch_size,
           rnn_units: modelData.rnn_layers.map(layer => ({
             neurons: layer.units,
@@ -270,7 +279,7 @@ export const useModels = (): UseModelsReturn => {
     onModelUpdate: handleModelUpdate,
     pollingInterval: 10000,
     enabled: hasActiveTrainings,
-    targetPage: '/', // Polling ativo na página Training
+    targetPage: '/treinamentos', // Polling ativo na página Treinamentos
   });
 
   useEffect(() => {

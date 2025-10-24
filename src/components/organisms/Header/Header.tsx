@@ -5,9 +5,9 @@ import type { HeaderProps } from './Header.types';
 
 const Header: React.FC<HeaderProps> = ({
   navigationItems = [
-    { label: 'Training', href: '/' },
-    { label: 'Dashboard', href: '/dashboard' },
-    { label: 'Documentation', href: '/documentation' },
+    { label: 'Treinamentos', href: '/treinamentos' },
+    { label: 'Painel', href: '/painel' },
+    { label: 'Documentação', href: '/documentacao' },
   ],
   logoSize = 'xl',
   className = '',

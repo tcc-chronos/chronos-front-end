@@ -24,7 +24,6 @@ const Dashboard = () => {
     learning_rate: 0.001,
     dropout_rate: 0.2,
     early_stopping_patience: 5,
-    multi_feature: false,
 
     // RNNConfig - inicialmente vazio, mas pode evoluir para armazenar camadas
     rnn_units: [128],
@@ -76,7 +75,6 @@ const Dashboard = () => {
         early_stopping_patience: Number(
           hyperparameters.early_stopping_patience
         ),
-        multi_feature: Boolean(hyperparameters.multi_feature),
         bidirecional: Boolean(hyperparameters.bidirecional),
         batch_size: Number(hyperparameters.batch_size),
       };

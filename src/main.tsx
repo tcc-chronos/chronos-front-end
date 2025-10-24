@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import {
   DefaultLayout,
   Training,
@@ -25,8 +25,13 @@ createRoot(document.getElementById('root')!).render(
             <PredictionPollingProvider>
               <Routes>
                 <Route element={<DefaultLayout />}>
-                  <Route path='/' element={<Training />} />
-                  <Route path='/dashboard' element={<DashboardPage />} />
+                  <Route
+                    path='/'
+                    element={<Navigate to='/treinamentos' replace />}
+                  />
+                  <Route path='/treinamentos' element={<Training />} />
+                  <Route path='/painel' element={<DashboardPage />} />
+                  <Route path='/documentacao' element={<Documentation />} />
                   <Route path='*' element={<NotFound />} />
                 </Route>
               </Routes>

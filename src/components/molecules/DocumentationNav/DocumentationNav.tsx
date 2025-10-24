@@ -10,27 +10,88 @@ const DocumentationNav: React.FC<DocumentationNavProps> = ({
   sections,
   activeSection,
 }) => {
-  const [currentSection, setCurrentSection] = useState(activeSection || '');
+  const [currentSection, setCurrentSection] = useState(
+    activeSection || sections[0]?.id || ''
+  );
 
   useEffect(() => {
-    const handleScroll = () => {
-      const sectionElements = sections.map(section =>
-        document.getElementById(section.id)
+    if (!sections.length) {
+      setCurrentSection('');
+      return;
+    }
+
+    if (
+      activeSection &&
+      sections.some(section => section.id === activeSection)
+    ) {
+      setCurrentSection(prev =>
+        prev === activeSection ? prev : activeSection
       );
+      return;
+    }
 
-      const currentSectionElement = sectionElements.find(element => {
-        if (!element) return false;
+    setCurrentSection(prev => {
+      if (prev && sections.some(section => section.id === prev)) {
+        return prev;
+      }
+      return sections[0].id;
+    });
+  }, [activeSection, sections]);
+
+  useEffect(() => {
+    const OFFSET = 140;
+
+    const handleScroll = () => {
+      if (!sections.length) return;
+
+      let nextSectionId = sections[0]?.id ?? '';
+      let closestTop = Number.NEGATIVE_INFINITY;
+
+      for (const section of sections) {
+        const element = document.getElementById(section.id);
+        if (!element) continue;
+
         const rect = element.getBoundingClientRect();
-        return rect.top <= 100 && rect.bottom >= 100;
-      });
+        if (rect.top <= OFFSET && rect.top > closestTop) {
+          nextSectionId = section.id;
+          closestTop = rect.top;
+        } else {
+          break;
+        }
+      }
 
-      if (currentSectionElement) {
-        setCurrentSection(currentSectionElement.id);
+      const scrolledToBottom =
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 4;
+
+      if (scrolledToBottom) {
+        const lastSection = sections[sections.length - 1];
+        if (lastSection) {
+          nextSectionId = lastSection.id;
+        }
+      }
+
+      setCurrentSection(prev =>
+        prev === nextSectionId ? prev : nextSectionId
+      );
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [sections]);
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '');
+      if (hash && sections.some(section => section.id === hash)) {
+        setCurrentSection(prev => (prev === hash ? prev : hash));
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    handleHashChange();
+    window.addEventListener('hashchange', handleHashChange);
+
+    return () => window.removeEventListener('hashchange', handleHashChange);
   }, [sections]);
 
   return (
@@ -40,7 +101,9 @@ const DocumentationNav: React.FC<DocumentationNavProps> = ({
           key={section.id}
           href={`#${section.id}`}
           title={section.title}
-          isActive={currentSection === section.id}
+          isActive={
+            currentSection === section.id || activeSection === section.id
+          }
         />
       ))}
     </nav>
