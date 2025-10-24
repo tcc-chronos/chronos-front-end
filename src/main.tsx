@@ -1,18 +1,44 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { DefaultLayout, Training, NotFound } from './components';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import {
+  DefaultLayout,
+  Training,
+  NotFound,
+  DashboardPage,
+  Documentation,
+} from './components';
+import {
+  NotificationProvider,
+  PredictionProvider,
+  PredictionPollingProvider,
+  PageLifecycleProvider,
+} from './contexts';
 import './styles/globals.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <Router>
-      <Routes>
-        <Route path='/' element={<DefaultLayout />}>
-          <Route index element={<Training />} />
-          <Route path='*' element={<NotFound />} />
-        </Route>
-      </Routes>
-    </Router>
+    <BrowserRouter>
+      <PageLifecycleProvider>
+        <NotificationProvider>
+          <PredictionProvider>
+            <PredictionPollingProvider>
+              <Routes>
+                <Route element={<DefaultLayout />}>
+                  <Route
+                    path='/'
+                    element={<Navigate to='/treinamentos' replace />}
+                  />
+                  <Route path='/treinamentos' element={<Training />} />
+                  <Route path='/painel' element={<DashboardPage />} />
+                  <Route path='/documentacao' element={<Documentation />} />
+                  <Route path='*' element={<NotFound />} />
+                </Route>
+              </Routes>
+            </PredictionPollingProvider>
+          </PredictionProvider>
+        </NotificationProvider>
+      </PageLifecycleProvider>
+    </BrowserRouter>
   </StrictMode>
 );
