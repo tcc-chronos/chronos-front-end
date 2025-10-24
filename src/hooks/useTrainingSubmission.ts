@@ -39,7 +39,7 @@ export const useTrainingSubmission = (): UseTrainingSubmissionReturn => {
 
       handleApiSuccess(
         'Modelo criado com sucesso!',
-        'O treinamento foi iniciado e você pode acompanhar o progresso.'
+        'O modelo está disponível e você pode iniciar um treinamento quando desejar.'
       );
 
       if (onSuccess) {

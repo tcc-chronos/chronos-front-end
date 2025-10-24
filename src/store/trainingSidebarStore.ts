@@ -40,10 +40,10 @@ export interface TrainingSidebarState {
   entity_id?: string;
   feature?: string;
   column_data: string;
-  epochs: number;
+  epochs?: number;
   forecast_horizon: number;
   lookback_window: number;
-  learning_rate: number;
+  learning_rate?: number;
   early_stopping_patience?: number;
   rnn_units: LayerConfig[];
   dense_units: LayerConfig[];
@@ -205,9 +205,11 @@ export const useTrainingSidebarStore = create<TrainingSidebarState>(
         state.entity_type &&
         state.entity_id &&
         state.feature &&
+        state.epochs !== undefined &&
         state.epochs > 0 &&
         state.forecast_horizon > 0 &&
         state.lookback_window > 0 &&
+        state.learning_rate !== undefined &&
         state.learning_rate > 0 &&
         state.batch_size > 0 &&
         state.rnn_units.length > 0 &&
@@ -218,6 +220,12 @@ export const useTrainingSidebarStore = create<TrainingSidebarState>(
       const state = get();
       if (!state.rnn_type) {
         throw new Error('RNN type is required');
+      }
+      if (state.epochs === undefined) {
+        throw new Error('Epochs is required');
+      }
+      if (state.learning_rate === undefined) {
+        throw new Error('Learning rate is required');
       }
       const modelName = `${state.rnn_type.toUpperCase()} - ${state.feature}`;
       const description = `${state.rnn_type.toUpperCase()} model for ${state.feature} forecasting`;
